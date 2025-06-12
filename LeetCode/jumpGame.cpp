@@ -48,6 +48,26 @@ public:
         return dp(nums, 0);
     }
 
+    //贪心算法
+    int jumpGreedy(vector<int>& nums) {
+        //当前索引能到达的最远距离
+        int farthest = 0;
+        //目前能到达的最远位置
+        int end = 0;
+        //当前跳的步数
+        int jumps = 0;
+
+        int n = nums.size();
+        for (int i = 0; i < n-1; i++) {
+            farthest = max(farthest, i + nums[i]);
+            if (end == i) {
+                jumps++;
+                end = farthest;
+            }
+        }
+        return jumps;
+    }
+
 };
 
 int main() {
@@ -60,5 +80,6 @@ int main() {
         cin >> nums[i];
     }
     // cout << sol.canJump(nums);
-    cout << sol.jumpMin(nums);
+    // cout << sol.jumpMin(nums);
+    cout << sol.jumpGreedy(nums);
 }
