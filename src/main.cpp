@@ -3,9 +3,10 @@
 using namespace std;
 
 int main() {
-    BinaryTree tree;
+    BinaryTree binaryTree;
     vector<int> values = {1, 2, 3, -1, 5, -1, 4};
-    tree.buildBinaryTree(values);
-    tree.levelOrder();
+    binaryTree.buildBinaryTree(values);
+    // binaryTree.levelOrder();
+    binaryTree.traverse();
     return 0;
 }

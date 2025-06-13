@@ -12,13 +12,13 @@ private:
         Node* right;
         Node(int x);
     };
-
     Node* root;
-
+    void traverse(Node* root);
 public:
     BinaryTree();
     void buildBinaryTree(vector<int>& values);
     vector<vector<int>> levelOrder();
+    void traverse();
 };
 
 #endif // BINARY_TREE_H
