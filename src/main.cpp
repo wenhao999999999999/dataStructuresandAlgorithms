@@ -28,9 +28,20 @@ int main() {
     NaryTree naryTree(root);
 
     vector<int> values = {1, 2, 3, -1, 5, -1, 4};
+
+    //创建二叉树
     binaryTree.buildBinaryTree(values);
+
+    //二叉树层序遍历
     // binaryTree.levelOrder();
+
+    //二叉树递归遍历
     // binaryTree.traverse();
-    naryTree.traverse();
+
+    //多叉树递归遍历
+    // naryTree.traverse();
+
+    //返回二叉树节点数目
+    cout << binaryTree.count() << endl;
     return 0;
 }

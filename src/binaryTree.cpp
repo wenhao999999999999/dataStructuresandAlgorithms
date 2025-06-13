@@ -94,3 +94,21 @@ void BinaryTree::traverse(Node* root) {
 void BinaryTree::traverse() {
     traverse(root); // 调用私有递归方法
 }
+
+//返回二叉树结点数目
+int BinaryTree::countInside(Node* root) {
+    //base case
+    if (!root) return 0;
+
+    //计算左子树节点数目
+    int leftreeNum = countInside(root->left);
+
+    //计算右子树节点数目
+    int rightreeNum = countInside(root->right);
+
+    return leftreeNum + rightreeNum + 1;
+}
+
+int BinaryTree::count() {
+    return countInside(root);
+}
