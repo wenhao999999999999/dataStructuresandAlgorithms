@@ -13,6 +13,7 @@
         "-I", "${workspaceFolder}/include",
         "${workspaceFolder}/src/main.cpp",
         "${workspaceFolder}/src/binaryTree.cpp",
+        "${workspaceFolder}/src/NaryTree.cpp",
         "-o",
         "${workspaceFolder}/exe/main.exe"
       ],
