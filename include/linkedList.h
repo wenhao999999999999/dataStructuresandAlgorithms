@@ -30,5 +30,18 @@ public:
         }
     }
 
+    //单链表递归遍历
+    void traverse(ListNode* head) {
+        if (head == nullptr) return;
+
+        //正序输出
+        // cout << head->val << endl;
+
+        //递归遍历
+        traverse(head->next);
+
+        //倒序输出
+        cout << head->val << endl;
+    }
 };
 

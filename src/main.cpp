@@ -41,7 +41,21 @@ int main() {
     //多叉树递归遍历
     // naryTree.traverse();
 
-    //返回二叉树节点数目
-    cout << binaryTree.count() << endl;
+    //输出二叉树节点数目
+    // cout << binaryTree.count() << endl;
+
+    //输出二叉树的最大深度
+    // cout << binaryTree.maxDepth() << endl;
+
+    //输出二叉树前序遍历结果
+    // vector<int> res = binaryTree.PreOrderTraversal();
+    //cout << "二叉树前序遍历结果：" << endl;
+    // for(auto num : res) {
+    //     cout << num ;
+    // }
+
+    //输出二叉树的直径
+    cout << "二叉树的直径：" << binaryTree.diameterOfBinaryTree() << endl;
+
     return 0;
 }

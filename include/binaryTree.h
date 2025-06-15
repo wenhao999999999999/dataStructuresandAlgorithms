@@ -13,9 +13,30 @@ private:
         Node* right;
         Node(int x);
     };
+
+    //二叉树根节点
     Node* root;
+
+    //二叉树遍历到的节点的深度
+    int depth = 0;
+
+    //二叉树的最大深度
+    int maxdepth = 0; 
+
+    //二叉树的最大直径
+    int maxdiameter = 0;
+
+    //二叉树的前序遍历结果，递归思路
+    vector<int> preordertraversal;
+
+    //返回二叉树前序遍历结果，分治思路
+    vector<int> preOrderTraversal(Node* root);
+
     void traverse(Node* root);
-    int countInside(Node* root); 
+    int countInside(Node* root);
+    int maxDepth1(Node* root);
+    int maxDepth2(Node* root); 
+    int diameterOfBinaryTree(Node* root);
 public:
     //二叉树对象构造函数
     BinaryTree();
@@ -31,6 +52,17 @@ public:
 
     //返回二叉树结点数目
     int count();
+
+    //返回二叉树的最大深度
+    int maxDepth();
+
+    //返回二叉树前序遍历结果
+    vector<int> PreOrderTraversal();
+
+    //返回二叉树的直径
+    int diameterOfBinaryTree();
+
+
     
 };
 
