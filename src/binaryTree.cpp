@@ -1,10 +1,11 @@
+//定义二叉树类的方法
 #include "../include/binaryTree.h"
 #include <queue>
 #include <iostream>
 using namespace std;
 
 //Node构造函数实现（注意作用域！）
-BinaryTree::Node::Node(int x) : val(x), left(nullptr), right(nullptr) {}
+BinaryTree::Node::Node(int x) : val(x), left(nullptr), right(nullptr), next(nullptr) {}
 
 //二叉树类构造函数
 BinaryTree::BinaryTree() : root(nullptr) {}
@@ -13,21 +14,33 @@ BinaryTree::BinaryTree() : root(nullptr) {}
     //输入：数组
     //返回：无
 void BinaryTree::buildBinaryTree(vector<int>& values) {
+
+    //数组为空，直接返回
     if (values.empty()) return;
 
+    //数组的第一个元素是二叉树的根节点
     root = new Node(values[0]);
+
+    //初始化一个队列，存储已经成为二叉树一部分的结点
     queue<Node*> q;
+
+    //根节点入队列
     q.push(root);
+
+    //数组的下一个元素的索引
     size_t i = 1;
 
     while (!q.empty() && i < values.size()) {
+
         Node* cur = q.front(); q.pop();
+
         //-1表示当前节点为空
         //先左子树
         if (values[i] != -1) {
             cur->left = new Node(values[i]);
             q.push(cur->left);
         }
+
         i++;
 
         //后右子树
@@ -35,6 +48,7 @@ void BinaryTree::buildBinaryTree(vector<int>& values) {
             cur->right = new Node(values[i]);
             q.push(cur->right);
         }
+
         i++;
     }
 }
@@ -46,10 +60,14 @@ vector<vector<int>> BinaryTree::levelOrder() {
 
     //存储返回的结果，数组的每行表示二叉树的一层
     vector<vector<int>> res;
+
+    //增强鲁棒性
     if (!root) return res;
 
     //存储叶子节点的队列
     queue<Node*> q;
+
+    //根节点压入队列
     q.push(root);
 
     //根节点在第一层
@@ -64,17 +82,24 @@ vector<vector<int>> BinaryTree::levelOrder() {
         vector<int> level;
 
         for (int i = 0; i < sz; i++) {
+
             //出队列
             Node* node = q.front(); q.pop();
+
             cout << "depth = " << depth << " " << node->val << endl;
+
+            //压入当前层
             level.push_back(node->val);
 
             //将当前叶子结点下一层的左右子树入队列
+                //注意：子节点入队前判断是否为空
             if (node->left) q.push(node->left);
             if (node->right) q.push(node->right);
         }
+
         //一层遍历完后，压入结果数组
         res.push_back(level);
+
         //层数加一
         depth++;
     }
@@ -220,6 +245,65 @@ int BinaryTree::diameterOfBinaryTree(Node* root) {
 //外部接口
 int BinaryTree:: diameterOfBinaryTree() {
     return diameterOfBinaryTree(root);
+}
+
+//三叉树遍历
+    //输入：二叉树的两个节点
+    //返回：无
+void BinaryTree::TernaryTreeTraversal(Node* node1, Node* node2) {
+    //base case
+    if (!node1 || !node2) return;
+
+    //将传入的两个结点连起来
+    node1->next = node2;
+
+    //连接相同父结点的两个结点
+    TernaryTreeTraversal(node1->left, node1->right);
+    TernaryTreeTraversal(node2->left, node2->right);
+
+    //连接相邻结点
+    TernaryTreeTraversal(node1->right, node2->left);
+}
+
+//连接相邻结点的定义
+    //输入：二叉树根节点
+    //返回：二叉树根节点
+BinaryTree::Node* BinaryTree:: connect(Node* root) {
+    if (!root) return root;
+
+    //遍历三叉树，连接相邻结点
+    TernaryTreeTraversal(root->left, root->right);
+
+    return root;
+}
+
+//二叉树展开成链表,分解思路
+    //输入：二叉树根节点
+    //返回：无
+    //函数定义：输入二叉树根节点，二叉树展开成链表
+void BinaryTree::flatten(Node* root) {
+    //base case
+    if (!root) return;
+
+    //先将左右子树各自展开成链表
+    flatten(root->left);
+    flatten(root->right);
+
+    //然后将展开的右子树接到左子树下方
+    //1.定义两条链表的头节点
+    Node* leftList = root->left;
+    Node* rightList = root->right;
+    
+    //2.将左子树作为右子树
+    root->right = leftList;
+    root->left = nullptr;
+
+    //3.将原先右子树接到当前右子树末端
+    Node* p = root;
+    while(p->right) {    
+        p = p->right;
+    }
+    p->right = rightList;
 }
 
 
