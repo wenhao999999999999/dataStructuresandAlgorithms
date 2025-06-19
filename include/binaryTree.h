@@ -3,6 +3,10 @@
 #define BINARY_TREE_H
 
 #include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <list>
+#include <string>
 using namespace std;
 
 class BinaryTree {
@@ -51,12 +55,53 @@ private:
 
     //填充每一个结点的下一个右侧结点的指针
     Node* connect(Node* root);
+
+    // 返回二叉树的序列化字符串
+    string serialize(Node* root);
+
+    // 寻找重复的子树
+    vector<Node*> findDuplicateSubtrees(Node* root);
+
+    // 记录所有子树的序列化结果,以及出现次数
+    unordered_map<string, int> subTrees;
+
+    // 记录重复的子树根节点
+    vector<Node*> duplicateSubtreesRoot;
+
 public:
     //二叉树对象构造函数
     BinaryTree();
 
     //输入一个数组，创建一颗二叉树
-    void buildBinaryTree(vector<int>& values);
+    void buildBinaryTree1(vector<int>& values);
+
+    //构造最大二叉树辅助函数
+    Node* build1 (vector<int>& nums, int lo, int hi);
+
+    //输入一个数组，按照最大二叉树原则，递归地构建一棵二叉树
+    Node* constructMaximumBinaryTree(vector<int>& nums);
+
+    // 存储 inorder 中值到索引的映射
+    unordered_map<int, int> valToIndex;
+
+    //根据前序遍历和中序遍历构造二叉树辅助函数
+    Node* build2(vector<int> preorder, int preStart, int preEnd,
+                 vector<int> inorder, int inStart, int inEnd);
+
+    Node* buildBinaryTree2(vector<int> preorder, vector<int>& inorder);
+
+    //根据中序遍历和后序遍历结果构造二叉树，辅助函数
+    Node* build3(vector<int>& inorder, int inStart, int inEnd,
+                 vector<int>& postorder, int postStart, int postEnd);
+
+    Node* buildBinaryTree3(vector<int>& inorder, vector<int>& postorder);
+
+    //根据前序遍历和后序遍历构造二叉树，辅助函数
+    Node* build4(vector<int> preorder, int preStart, int preEnd,
+                 vector<int>& postorder, int postStart, int postEnd);
+    
+    //根据前序遍历和后序遍历构造二叉树，存在多个答案可以返回任何一个
+    Node* buildBinaryTree4(vector<int>& preorder, vector<int>& postorder);
 
     //二叉树的层序遍历
     vector<vector<int>> levelOrder();
@@ -78,10 +123,6 @@ public:
 
     //三叉树遍历框架
     void TernaryTreeTraversal (Node* node1, Node* node2);
-
-    //连接相邻结点
-    Node* connect();
-    
 };
 
 #endif // BINARY_TREE_H
