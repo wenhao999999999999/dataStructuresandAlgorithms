@@ -30,7 +30,7 @@ int main() {
     vector<int> values = {1, 2, 3, -1, 5, -1, 4};
 
     //创建二叉树
-    binaryTree.buildBinaryTree(values);
+    binaryTree.buildBinaryTree1(values);
 
     //二叉树层序遍历
     // binaryTree.levelOrder();

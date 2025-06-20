@@ -2,6 +2,8 @@
 #include "../include/binaryTree.h"
 #include <queue>
 #include <iostream>
+#include <string>
+#include <sstream>
 using namespace std;
 
 //Node构造函数实现（注意作用域！）
@@ -533,5 +535,77 @@ vector<BinaryTree::Node*> BinaryTree::findDuplicateSubtrees(Node* root) {
     serialize(root);
     return duplicateSubtreesRoot;
 }
+
+
+// 把一颗二叉树序列化成字符串,遍历方法实现
+    // 输入：二叉树根节点
+    // 返回：字符串
+    // 方法：前序遍历
+string Codec::serializeTraverse(TreeNode* root) {
+    string sb;
+    _serializeTraverse(root, sb);
+    return sb;
+}
+
+ // 辅助函数，将二叉树存入 StringBuilder
+void Codec::_serializeTraverse(TreeNode* root, string& sb) {
+    if (!root) {
+        sb.append(NULLSYM).append(SEP);
+        //注意：空结点要返回
+        return;
+    }
+
+    // 前序位置存入二叉树结点
+    sb.append(to_string(root->val)).append(SEP);
+
+    _serializeTraverse(root->left, sb);
+    _serializeTraverse(root->right, sb);
+}
+
+// 把字符串反序列化成二叉树,遍历方法实现
+    //输入：二叉树序列化后的字符串
+    //返回：反序列化后的二叉树的根节点
+TreeNode* Codec::deserializeTraverse(string data) {
+    // 把字符串转化成列表
+    list<string> nodes;
+
+    // 实例化一个输入字符串流对象
+    istringstream f(data);
+
+    // 临时存储字符串
+    string s;
+    
+    //注意：getline()函数参数的分隔符只能是字符
+    while (getline(f, s, ',')) {
+        nodes.push_back(s);
+    }
+
+    return _deserializeTraverse(nodes);
+
+}
+TreeNode* Codec::_deserializeTraverse(list<string>& nodes) {
+    if (nodes.empty()) {
+        return nullptr;
+    }
+
+    // ********前序位置********
+    // 列表最左侧就是根节点
+    string first = nodes.front();
+    nodes.pop_front();
+
+    // 如果为空，直接返回
+    if (first == NULLSYM) return nullptr;
+
+    // 如果不为空，创建一个结点
+    TreeNode* root = new TreeNode(stoi(first));
+
+    //递归构建左右子树
+    root->left = _deserializeTraverse(nodes);
+    root->right = _deserializeTraverse(nodes);
+
+    return root;
+}
+
+
 
 

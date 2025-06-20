@@ -125,4 +125,29 @@ public:
     void TernaryTreeTraversal (Node* node1, Node* node2);
 };
 
+//力扣的二叉树节点的定义
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}; 
+};
+
+class Codec {
+public: 
+    // 定义分隔符,用于分开每个节点
+    string SEP = ",";
+
+    //定义空指针，用于标记 NULL
+    string NULLSYM = "#";
+
+    // 把一颗二叉树序列化成字符串,遍历方法实现
+    string serializeTraverse(TreeNode* root);
+    void _serializeTraverse(TreeNode* root, string& sb);
+
+    // 把字符串反序列化成二叉树,遍历方法实现
+    TreeNode* deserializeTraverse(string data);
+    TreeNode* _deserializeTraverse(list<string>& nodes);
+};
+
 #endif // BINARY_TREE_H
