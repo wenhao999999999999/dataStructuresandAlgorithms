@@ -243,54 +243,54 @@ BinaryTree::Node* BinaryTree:: buildBinaryTree4(vector<int>& preorder, vector<in
 
 
 
-//二叉树的层序遍历
-    //输入：无
-    //返回：二维数组
+// 二叉树的层序遍历
+    // 输入：无
+    // 返回：二维数组
 vector<vector<int>> BinaryTree::levelOrder() {
 
-    //存储返回的结果，数组的每行表示二叉树的一层
+    // 存储返回的结果，数组的每行表示二叉树的一层
     vector<vector<int>> res;
 
-    //增强鲁棒性
+    // 增强鲁棒性
     if (!root) return res;
 
-    //存储叶子节点的队列
+    // 存储叶子节点的队列
     queue<Node*> q;
 
-    //根节点压入队列
+    // 根节点压入队列
     q.push(root);
 
-    //根节点在第一层
+    // 根节点在第一层
     int depth = 1;
 
     while (!q.empty()) {
 
-        //当前层中叶子节点的数量
+        // 当前层中叶子节点的数量
         int sz = q.size();
 
-        //存储当前层中所有的叶子节点
+        // 存储当前层中所有的叶子节点
         vector<int> level;
 
         for (int i = 0; i < sz; i++) {
 
-            //出队列
+            // 出队列
             Node* node = q.front(); q.pop();
 
             cout << "depth = " << depth << " " << node->val << endl;
 
-            //压入当前层
+            // 压入当前层
             level.push_back(node->val);
 
-            //将当前叶子结点下一层的左右子树入队列
-                //注意：子节点入队前判断是否为空
+            // 将当前叶子结点下一层的左右子树入队列
+                //注意：子节点入队前需要先判断子树节点是否为空
             if (node->left) q.push(node->left);
             if (node->right) q.push(node->right);
         }
 
-        //一层遍历完后，压入结果数组
+        // 一层遍历完后，压入结果数组
         res.push_back(level);
 
-        //层数加一
+        // 层数加一
         depth++;
     }
 
@@ -605,6 +605,55 @@ TreeNode* Codec::_deserializeTraverse(list<string>& nodes) {
 
     return root;
 }
+
+// 二叉搜索树中第 K 小的元素
+int BinarySearchTree::kthSmallest(TreeNode* root, int k) {
+    traverse(root, k);
+    return res;
+}
+
+void BinarySearchTree::traverse(TreeNode* root, int k) {
+ // base case
+ if (!root) return;
+
+ traverse(root->left, k);
+
+// **********中序位置***********
+ rank++;
+
+ if (rank == k) {
+    res = root->val;
+    // 提前结束当前这层的递归函数
+    return; 
+ }
+
+ traverse(root->right, k);
+
+}
+
+// 把二叉搜索树转换为累加数
+TreeNode* BinarySearchTree::convertBST(TreeNode* root) {
+    traverse2(root);
+    return root;
+}
+
+void BinarySearchTree::traverse2(TreeNode* root) {
+    // base case
+    if (!root) return;
+
+    // 先递归遍历右子树
+    traverse2(root->right);
+
+    // 维护累加和
+    sum += root->val;
+    
+    // 将BST转化成累加树
+    root->val = sum;
+
+    // 后递归遍历左子树
+    traverse2(root->left);
+}
+
 
 
 

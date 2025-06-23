@@ -125,7 +125,7 @@ public:
     void TernaryTreeTraversal (Node* node1, Node* node2);
 };
 
-//力扣的二叉树节点的定义
+// 力扣的二叉树节点的定义
 struct TreeNode {
     int val;
     TreeNode* left;
@@ -133,6 +133,7 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}; 
 };
 
+// 二叉树序列化的类
 class Codec {
 public: 
     // 定义分隔符,用于分开每个节点
@@ -148,6 +149,31 @@ public:
     // 把字符串反序列化成二叉树,遍历方法实现
     TreeNode* deserializeTraverse(string data);
     TreeNode* _deserializeTraverse(list<string>& nodes);
+};
+
+// 二叉搜索树的类
+class BinarySearchTree {
+public:
+    // 当前节点的排名
+    int rank = 0;
+
+    // 第 K 小的元素
+    int res = 0;
+
+    // 累加和
+    int sum = 0;
+
+    // 二叉搜索树中第 K 小的元素
+        // 给定一个二叉搜索树的根节点 root ，和一个整数 k ，
+        // 请你设计一个算法查找其中第 k 小的元素（从 1 开始计数）。
+    int kthSmallest(TreeNode* root, int k);
+    void traverse(TreeNode* root, int k);
+
+    // 二叉搜索树转换为累加树
+        // 给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），
+        // 使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
+    TreeNode* convertBST(TreeNode* root);
+    void traverse2(TreeNode* root);
 };
 
 #endif // BINARY_TREE_H
