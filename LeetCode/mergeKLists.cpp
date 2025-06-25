@@ -2,7 +2,7 @@
 #include <../include/linkedList.h>
 using namespace std;
 
-//合并两个有序链表
+//1. 合并两个有序链表
 //输入：链表1，链表2
 //返回：一个升序链表
 ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
@@ -35,7 +35,7 @@ ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
     return dummy->next;
 }
 
-//合并K个升序链表,循环形式
+// 2.1 合并K个升序链表,循环形式
 //输入：K个链表
 //返回:一个升序链表
 ListNode* mergeKLists(vector<ListNode*> lists) {
@@ -51,7 +51,7 @@ ListNode* mergeKLists(vector<ListNode*> lists) {
     return listNew;
 }
 
-//合并K个升序链表，递归形式
+// 2.2 合并K个升序链表，递归形式
 //输入：K个升序链表
 //返回：1个升序链表
 ListNode* mergeKLists2(vector<ListNode*> lists, int start) {
@@ -67,7 +67,7 @@ ListNode* mergeKLists2(vector<ListNode*> lists, int start) {
     return mergeTwoLists(lists[start], subLists);
 }
 
-//合并K个升序链表，递归形式,平衡递归树，减少链表的重复遍历次数，提高算法的效率
+// 2.3 合并K个升序链表，递归形式,平衡递归树，减少链表的重复遍历次数，提高算法的效率
 //输入：K个升序链表
 //返回：1个升序链表
 ListNode* mergeKLists3(vector<ListNode*> lists, int start, int end) {
@@ -87,6 +87,22 @@ ListNode* mergeKLists3(vector<ListNode*> lists, int start, int end) {
 
     //合并左右两个子链表
     return mergeTwoLists(leftTree, rightTree);
+}
+
+// 3.反转链表
+// 函数定义：输入一个链表的头节点，返回反转之后的链表的头节点
+ListNode* reverseList(ListNode* head) {
+
+    // 注意：这里判断条件是或的关系
+    if (head == nullptr || head->next == nullptr) return head;
+
+    // 注意：这里返回的是头节点
+    ListNode* last = reverseList(head->next);
+    head->next->next = head;
+    head->next = nullptr;
+
+    return last;
+
 }
 
 
