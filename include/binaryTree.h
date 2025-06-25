@@ -163,17 +163,62 @@ public:
     // 累加和
     int sum = 0;
 
-    // 二叉搜索树中第 K 小的元素
+    // 1.二叉搜索树中第 K 小的元素
         // 给定一个二叉搜索树的根节点 root ，和一个整数 k ，
         // 请你设计一个算法查找其中第 k 小的元素（从 1 开始计数）。
     int kthSmallest(TreeNode* root, int k);
     void traverse(TreeNode* root, int k);
 
-    // 二叉搜索树转换为累加树
+    // 2.二叉搜索树转换为累加树
         // 给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），
         // 使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
     TreeNode* convertBST(TreeNode* root);
     void traverse2(TreeNode* root);
+
+    // 3.验证二叉树的合法性
+    // 给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。
+    // 有效 二叉搜索树定义如下：
+        // 节点的左子树只包含 小于 当前节点的数。
+        // 节点的右子树只包含 大于 当前节点的数。
+        // 所有左子树和右子树自身必须也是二叉搜索树。
+    bool isValidBST(TreeNode* root);
+    bool _isValidBST(TreeNode* root, TreeNode* min, TreeNode* max);
+
+    // 4.在二叉搜索树中搜索元素
+    TreeNode* searchBST(TreeNode* root, int target);
+
+    // 5.二叉搜索树中的插入操作
+    // 给定二叉搜索树（BST）的根节点 root 和要插入树中的值 value，将值插入二叉搜索树。
+    // 返回插入后二叉搜索树的根节点。 输入数据 保证 ，新值和原始二叉搜索树中的任意节点值都不同。
+    TreeNode* insertIntoBST(TreeNode* root, int val);
+
+    // 6.二叉搜索树中的删除操作
+    // 给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点
+    // ，并保证二叉搜索树的性质不变。返回二叉搜索树（有可能被更新）的根节点的引用。
+    TreeNode* deleteNode(TreeNode* root, int key);
+    TreeNode* getMin(TreeNode* node);
+
 };
+
+class Solution {
+public:
+    // *************二叉树构造*************
+    // 1.不同的二叉搜索树
+        // 给你一个整数 n ，求恰由 n 个节点组成且节点值从 1 到 n
+        // 互不相同的 二叉搜索树 有多少种？返回满足题意的二叉搜索树的种数。
+
+    // 备忘录,消除重叠子问题
+    vector<vector<int>> memo;    
+    int numTrees(int n);
+    // 定义：闭区间 [lo, hi] 的数字能组成 count(lo, hi) 种 BST
+    int count(int lo, int hi);
+
+    // 2. 不同的二叉搜索树Ⅱ
+        // 给你一个整数 n ，请你生成并返回所有由 n 个节点组成且节点值从 1 到 n 互不相同的不同 二叉搜索树 。可以按 任意顺序 返回答案。
+    vector<TreeNode*> generateTrees(int n);
+    // 定义：构造闭区间 [lo, hi] 组成的 BST
+    vector<TreeNode*> build(int lo, int hi);
+};
+
 
 #endif // BINARY_TREE_H

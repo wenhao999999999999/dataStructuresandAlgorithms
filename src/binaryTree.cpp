@@ -260,11 +260,13 @@ vector<vector<int>> BinaryTree::levelOrder() {
     // 根节点压入队列
     q.push(root);
 
+    // 维护层数变量
     // 根节点在第一层
     int depth = 1;
 
     while (!q.empty()) {
 
+        // 维护每一层节点数变量
         // 当前层中叶子节点的数量
         int sz = q.size();
 
@@ -623,7 +625,7 @@ void BinarySearchTree::traverse(TreeNode* root, int k) {
 
  if (rank == k) {
     res = root->val;
-    // 提前结束当前这层的递归函数
+    // 注意：提前结束当前这层的递归函数
     return; 
  }
 
@@ -644,6 +646,7 @@ void BinarySearchTree::traverse2(TreeNode* root) {
     // 先递归遍历右子树
     traverse2(root->right);
 
+    // 注意：先求累加和再赋值
     // 维护累加和
     sum += root->val;
     
@@ -653,6 +656,209 @@ void BinarySearchTree::traverse2(TreeNode* root) {
     // 后递归遍历左子树
     traverse2(root->left);
 }
+
+// 验证二叉搜索树
+bool BinarySearchTree::isValidBST(TreeNode* root) {
+    // 调用了辅助函数 _isValidBST，初始时没有上下界限制
+    // （min = nullptr, max = nullptr），表示根节点可以是任意值
+    return _isValidBST(root, nullptr, nullptr);
+}
+
+// 辅助函数
+    // 输入：二叉树根节点，当前节点的取值范围
+    // 返回：判断以当前节点为根节点的二叉树是否为二叉搜索树
+///     
+bool BinarySearchTree::_isValidBST(TreeNode* root, TreeNode* min, TreeNode* max) {
+    // base case
+    if (root == nullptr) return true; // 空节点是合法 BST。
+
+    // 如果有最小限制 min，则当前节点必须严格大于 min->val
+    if (min != nullptr && root->val <= min->val) return false;
+
+    // 如果有最大限制 max，则当前节点必须严格小于 max->val
+    if (max != nullptr && root->val >= max->val) return false;
+
+    // 这保证了整个子树中的所有节点满足 BST 要求，而不仅仅是直接子节点
+
+
+    // 根据定义，限定左子树的最大值是 root->val，右子树的最小值是 root->val
+    // 递归的判断左右子树是否为二叉搜索树
+    return _isValidBST(root->left, min, root) 
+            && _isValidBST(root->right, root, max);    
+}
+
+// 在二叉搜索树中搜索元素
+    // 输入：二叉搜索树根节点，目标值
+    // 返回：目标值对应的二叉树节点
+TreeNode* BinarySearchTree::searchBST(TreeNode* root, int target) {
+    if (!root) return nullptr;
+
+    // 当前节点的值大于目标值，左子树寻找
+    if (root->val > target) return searchBST(root->left, target);
+
+    // 当前节点的值小于目标值，右子树寻找
+    if (root->val < target) return searchBST(root->right, target);
+
+    // 当前节点的值等于目标值
+    return root;
+}
+
+/// @brief 二叉搜索树中的插入操作
+/// @param root 
+/// @param val 
+/// @return 新二叉搜索树根节点
+TreeNode* BinarySearchTree::insertIntoBST(TreeNode* root, int val) {
+    if (!root) {
+        // 注意：二叉搜索树插入的一定是一个新的“叶子节点”。
+        // 找到空位置插入新节点
+        return new TreeNode(val);
+    }
+
+    // 插入节点的值大于当前节点的值，去右子树找插入位置
+    if (root->val < val) {
+        root->right = insertIntoBST(root->right, val);
+    }
+
+    // 插入节点的值小于当前节点的值，去左子树找插入位置
+    if (root->val > val) {
+        root->left = insertIntoBST(root->left, val);
+    }
+
+    // 返回 root，上层递归会接收返回值作为子节点
+    return root;
+}
+
+/// @brief 删除二叉搜索树的指定节点
+/// @param root 二叉搜索树根节点
+/// @param key 要删除节点对应的值
+/// @return 二叉搜索树根节点
+TreeNode* BinarySearchTree::deleteNode(TreeNode* root, int key) {
+    if (!root) return nullptr;
+
+    if (root->val == key) {
+        // 情况1：左右子节点为空
+        // 情况2：左子树或右子树为空
+        if (!root->left) return root->right;
+        if (!root->right) return root->left;
+
+        // 情况3：左右子树都不为空
+        // 获取右子树中最小的元素
+        TreeNode* minNode = getMin(root->right);
+
+        // 删除右子树中最小的节点
+        root->right = deleteNode(root->right, minNode->val);
+
+        // 用右子树最小节点替换当前节点
+        minNode->left = root->left;
+        minNode->right = root->right;
+        root = minNode;
+        // 值小，左子树中寻找
+    } else if (root->val > key) {
+        root->left = deleteNode(root->left, key);
+    } else if (root->val < key) {
+        // 值大，右子树中寻找
+        root->right = deleteNode(root->right, key);
+    }
+
+    return root;
+}
+
+/// @brief 获取二叉搜索树中的最小元素
+/// @param root 二叉搜索树根节点
+/// @return 最小值对应的节点
+TreeNode* BinarySearchTree::getMin(TreeNode* root) {
+    // BST 最左边的就是最小的
+    while (root->left != nullptr) root = root->left;
+    return root;
+}
+
+/// @brief 不同的二叉搜索树
+/// @param n 整数 n ，求恰由 n 个节点组成且节点值从 1 到 n,互不相同的 二叉搜索树 有多少种？
+/// @return 满足题意的二叉搜索树的种数。
+    // 注意：二叉树算法的关键就在于明确根节点需要做什么
+int Solution::numTrees(int n) {
+    // 备忘录的值初始化为 0
+    memo = vector<vector<int>>(n + 1, vector<int>(n + 1));
+    return count(1,n);
+}
+
+/// @brief 闭区间 [lo, hi] 的数字能组成 count(lo, hi) 种 BST
+/// @param lo 数字下界
+/// @param hi 数字上界
+/// @return 能组成的 BST 数目
+int Solution::count(int lo, int hi) {
+    // base case
+        // 合法的 BST 为空，只有一种情况
+    if (lo > hi) return 1;
+    
+    // 查备忘录
+    if (memo[lo][hi] != 0) {
+            return memo[lo][hi];
+    }    
+
+    int res = 0;
+    for (int i = lo; i <= hi; i++) {
+        // i 的值作为根节点 root
+        int left = count(lo, i - 1);
+        int right = count(i + 1, hi);
+
+        res += left * right;
+    }
+
+    // 将结果存入备忘录
+    memo[lo][hi] = res;
+
+    return res;
+}
+
+
+/// @brief 不同的二叉搜索树
+/// @param n 整数 n ，求恰由 n 个节点组成且节点值从 1 到 n,互不相同的 二叉搜索树
+/// @return 满足题意的二叉搜索树
+vector<TreeNode*> Solution::generateTrees(int n) {
+    if (n == 0) return vector<TreeNode*>{};
+    // 构造闭区间 [1, n] 组成的 BST 
+    return build(1, n);    
+
+}
+
+/// @brief 构造闭区间 [lo, hi] 组成的 BST
+/// @param lo 数字下界
+/// @param hi 数字上界
+/// @return 能组成的 BST
+vector<TreeNode*> Solution::build(int lo, int hi) {
+    vector<TreeNode*> res;
+    // base case
+         if (lo > hi) {
+            // 这里需要装一个 null 元素，这样才能让下面的两个内层 for 循环都能进入，正确地创建出叶子节点
+            // 举例来说吧，什么时候会进到这个 if 语句？当你创建叶子节点的时候，对吧。
+            // 那么如果你这里不加 null，直接返回空列表，那么下面的内层两个 for 循环都无法进入
+            // 你的那个叶子节点就没有创建出来，看到了吗？所以这里要加一个 null，确保下面能把叶子节点做出来
+            res.emplace_back(nullptr);
+            return res;
+        } 
+    
+    // 1、穷举 root 节点的所有可能。
+    for (int i = lo; i <= hi; i++) {
+        // 2、递归构造出左右子树的所有有效 BST。
+         vector<TreeNode*> leftTree = build(lo, i - 1);
+         vector<TreeNode*> rightTree = build(i + 1, hi);
+         
+        // 3、给 root 节点穷举所有左右子树的组合。
+        for (auto left : leftTree) {
+            for (auto right : rightTree) {
+                TreeNode* root = new TreeNode(i);
+                root->left = left;
+                root->right = right;
+                res.emplace_back(root);                
+            }
+        }
+    }
+
+    return res;
+}
+
+
 
 
 
