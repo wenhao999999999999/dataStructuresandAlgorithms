@@ -797,9 +797,15 @@ int Solution::count(int lo, int hi) {
     }    
 
     int res = 0;
+
+    // 循环统计造每个值作为根节点值的 BST
     for (int i = lo; i <= hi; i++) {
+
         // i 的值作为根节点 root
+        // 递归统计左子树数量
         int left = count(lo, i - 1);
+
+        // 递归统计右子树数量
         int right = count(i + 1, hi);
 
         res += left * right;
@@ -812,7 +818,7 @@ int Solution::count(int lo, int hi) {
 }
 
 
-/// @brief 不同的二叉搜索树
+/// @brief 不同的二叉搜索树Ⅱ
 /// @param n 整数 n ，求恰由 n 个节点组成且节点值从 1 到 n,互不相同的 二叉搜索树
 /// @return 满足题意的二叉搜索树
 vector<TreeNode*> Solution::generateTrees(int n) {
@@ -823,9 +829,11 @@ vector<TreeNode*> Solution::generateTrees(int n) {
 }
 
 /// @brief 构造闭区间 [lo, hi] 组成的 BST
-/// @param lo 数字下界
-/// @param hi 数字上界
-/// @return 能组成的 BST
+/// @param lo 数字区间下界
+/// @param hi 数字区间上界
+/// @return 能组成的 BST 的根节点
+
+// 递归函数定义：构造闭区间 [lo, hi] 组成的 BST，并返回 BST 的根节点数组
 vector<TreeNode*> Solution::build(int lo, int hi) {
     vector<TreeNode*> res;
     // base case
@@ -841,8 +849,8 @@ vector<TreeNode*> Solution::build(int lo, int hi) {
     // 1、穷举 root 节点的所有可能。
     for (int i = lo; i <= hi; i++) {
         // 2、递归构造出左右子树的所有有效 BST。
-         vector<TreeNode*> leftTree = build(lo, i - 1);
-         vector<TreeNode*> rightTree = build(i + 1, hi);
+        vector<TreeNode*> leftTree = build(lo, i - 1);
+        vector<TreeNode*> rightTree = build(i + 1, hi);
          
         // 3、给 root 节点穷举所有左右子树的组合。
         for (auto left : leftTree) {
@@ -854,8 +862,69 @@ vector<TreeNode*> Solution::build(int lo, int hi) {
             }
         }
     }
-
     return res;
+}
+
+// 返回二叉搜索树的最大值
+int BinarySearchTree::findMax(TreeNode* root) {
+    while(root->right != nullptr) root = root->right;
+    return root->val; 
+}
+
+// 返回二叉搜索树的最小值
+int BinarySearchTree::findMin(TreeNode* root) {
+    while(root->left != nullptr) root = root->left;
+    return root->val;
+}
+
+
+/// @brief 给你一棵以 root 为根的 二叉树 ，请你返回 任意 二叉搜索子树的最大键值和。
+/// @param root 
+/// @return 二叉搜索子树的最大键值和
+/// 每个节点要做的事情：
+///     1、左右子树是否是 BST。
+///     2、左子树的最大值和右子树的最小值。
+///     3、左右子树的节点值之和。         
+int Solution::maxSumBST(TreeNode* root) {
+    findMaxMinSum(root);
+    return maxSum;
+}
+
+// 计算以 root 为根的二叉树的最大值、最小值、节点和
+vector<int> Solution::findMaxMinSum(TreeNode* root) {
+    // base case
+    if (root == nullptr) {
+        return vector<int>{1, INT_MAX, INT_MIN, 0};
+    }
+
+    // 递归计算左右子树
+    vector<int> left = findMaxMinSum(root->left);  
+    vector<int> right = findMaxMinSum(root->right);  
+    
+    // ******* 后序遍历位置 *******
+    // 通过 left 和 right 推导返回值
+    // 并且正确更新 maxSum 变量    
+    vector<int> res(4);
+    // 这个 if 在判断以 root 为根的二叉树是不是 BST
+    if (left[0] == 1 && right[0] == 1 &&
+        root->val > left[2] && root->val < right[1]) {
+            // 以 root 为根的二叉树是 BST
+            res[0] = 1;
+            // 计算以 root 为根的这棵 BST 的最小值
+            res[1] = min(left[1], root->val);
+            // 计算以 root 为根的这棵 BST 的最大值
+            res[2] = max(right[2], root->val);
+            // 计算以 root 为根的这棵 BST 所有节点之和
+            res[3] = left[3] + right[3] + root->val;
+            // 更新全局变量
+            maxSum = max(maxSum, res[3]);
+        } else {
+            // 以 root 为根的二叉树不是 BST
+            res[0] = 0;
+            // 其他的值都没必要计算了，因为用不到
+        } 
+        
+        return res;
 }
 
 

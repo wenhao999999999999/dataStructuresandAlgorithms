@@ -219,6 +219,83 @@ public:
     }
 };
 
+// ************* 单调栈算法 **************** \\
+// 单调栈用途不太广泛，只处理一类典型的问题，比如「下一个更大元素」，「上一个更小元素」等。
+
+/// @brief 输入一个数组 nums，请你返回一个等长的结果数组，结果数组中对应索引存储着下一个更大元素，如果没有更大的元素，就存 -1。
+/// @param nums 
+/// @return res
+vector<int> calculateGreaterElement(vector<int>& nums) {
+    int sz = nums.size();
+
+    vector<int> res(sz);
+
+    stack<int> stk;
+
+    // 倒着往栈里放
+    for (int i = sz - 1; i >= 0; i--) {
+        // 判定各自高矮
+        while (!stk.empty() && stk.top() <= nums[i]) {
+            // 矮个起开，反正也被挡着了。。。
+            stk.pop();
+        }
+
+        res[i] = stk.empty() ? -1 : stk.top();
+        stk.push(nums[i]);
+    }
+
+    return res;
+}
+// for 循环要从后往前扫描元素，因为我们借助的是栈的结构，倒着入栈，其实是正着出栈。
+
+
+/// 问题变形
+// 1.下一个更大元素Ⅰ
+// nums1 中数字 x 的 下一个更大元素 是指 x 在 nums2 中对应位置 右侧 的 第一个 比 x 大的元素。
+// 给你两个 没有重复元素 的数组 nums1 和 nums2 ，下标从 0 开始计数，其中nums1 是 nums2 的子集。
+// 对于每个 0 <= i < nums1.length ，找出满足 nums1[i] == nums2[j] 的下标 j ，并且在 nums2 确定 nums2[j] 的 下一个更大元素 。如果不存在下一个更大元素，那么本次查询的答案是 -1 。
+
+/// @brief 因为题目说 nums1 是 nums2 的子集，那么我们先把 nums2 中每个元素的下一个更大元素算出来存到一个映射里，然后再让 nums1 中的元素去查表即可：
+/// @param nums1 
+/// @param nums2 
+/// @return 
+vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+    vector<int> greater = calculateGreaterElement(nums2);
+
+    unordered_map<int, int> greaterMap;
+    
+    for (int i = 0; i < nums2.size(); i++) {
+        greaterMap[nums2[i]] = greater[i];
+    }
+
+    vector<int> res(nums1.size());
+
+    for (int i = 0; i < nums1.size(); i++) {
+        res[i] = greaterMap[nums1[i]];
+    }
+
+    return res;
+}
+
+// 2.每日温度
+// 给定一个整数数组 temperatures ，表示每天的温度，返回一个数组 answer ，其中 answer[i] 是指对于第 i 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 0 来代替。
+
+vector<int> dailyTemperatures(vector<int>& temperatures) {
+    int n = temperatures.size();
+    vector<int> res(n);
+    stack<int> index;
+
+    for (int i = n - 1; i >= 0; i--) {
+        while (!index.empty() && temperatures[i] >= temperatures[index.top()]) {
+            index.pop();
+        }
+
+        res[i] = index.empty() ? 0 : index.top() - i;
+        index.push(i);
+    }
+    return res;
+
+}
 
 int main() {
     Solution sol;

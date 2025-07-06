@@ -170,7 +170,7 @@ public:
     void traverse(TreeNode* root, int k);
 
     // 2.二叉搜索树转换为累加树
-        // 给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），
+        // 给出二叉搜索树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），
         // 使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
     TreeNode* convertBST(TreeNode* root);
     void traverse2(TreeNode* root);
@@ -198,11 +198,17 @@ public:
     TreeNode* deleteNode(TreeNode* root, int key);
     TreeNode* getMin(TreeNode* node);
 
+    // 7.寻找二叉搜索树的最大值
+    int findMax(TreeNode* root);
+
+    // 8.寻找二叉搜索树的最小值
+    int findMin(TreeNode* root);
+
 };
 
 class Solution {
 public:
-    // *************二叉树构造*************
+    // *************************二叉搜索树构造********************
     // 1.不同的二叉搜索树
         // 给你一个整数 n ，求恰由 n 个节点组成且节点值从 1 到 n
         // 互不相同的 二叉搜索树 有多少种？返回满足题意的二叉搜索树的种数。
@@ -216,9 +222,21 @@ public:
     // 2. 不同的二叉搜索树Ⅱ
         // 给你一个整数 n ，请你生成并返回所有由 n 个节点组成且节点值从 1 到 n 互不相同的不同 二叉搜索树 。可以按 任意顺序 返回答案。
     vector<TreeNode*> generateTrees(int n);
-    // 定义：构造闭区间 [lo, hi] 组成的 BST
+    // 定义：构造闭区间 [lo, hi] 组成的 BST，并返回根节点
     vector<TreeNode*> build(int lo, int hi);
+
+    // ***********************二叉搜索树后序篇***********************
+    // 全局变量，记录 BST 最大节点之和
+    int maxSum = 0;
+
+    // 1.二叉搜索子树的最大键值和
+    // 给你一棵以 root 为根的 二叉树 ，请你返回 任意 二叉搜索子树的最大键值和。
+    int maxSumBST(TreeNode* root);
+    // 计算以 root 为根的二叉树的最大值、最小值、节点和,返回值：
+    // res[0] 记录以 root 为根的二叉树是否是 BST，若为 1 则说明是 BST，若为 0 则说明不是 BST；
+    // res[1] 记录以 root 为根的二叉树所有节点中的最小值；
+    // res[2] 记录以 root 为根的二叉树所有节点中的最大值；
+    // res[3] 记录以 root 为根的二叉树所有节点值之和。
+    vector<int> findMaxMinSum(TreeNode* root);
 };
-
-
 #endif // BINARY_TREE_H

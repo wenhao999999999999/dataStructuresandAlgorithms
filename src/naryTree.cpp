@@ -27,6 +27,7 @@ void NaryTree::traverseInside(TreeNode* node) {
     for(auto child : node->children) {
         traverseInside(child);
     }
+    //后续位置
 }
 
 //多叉树递归遍历外部接口
