@@ -63,6 +63,9 @@ public:
 
         // base case : dp 数组全部初始化为 1
         for (int i = 0; i < n; i++) {
+            // nums[i] 前面的所有数都可以作为递增子序列的前缀
+            // 注意：这里的 i 是从 0 开始的，所以 j 的范围是 [0, i-1]
+            // 也就是 nums[i] 前面的所有数都可以作为递增子序
             for (int j = 0; j < i; j++) {
                 if (nums[i] > nums[j]) {
                     dp[i] = max(dp[i], dp[j]+1);
@@ -78,6 +81,65 @@ public:
         return res;
     }
  
+};
+
+// 3. 下降路径最小和
+// 给你一个 n x n 的 方形 整数数组 matrix ，请你找出并返回通过 matrix 的下降路径 的 最小和 。
+// 下降路径 可以从第一行中的任何元素开始，并从每一行中选择一个元素。在下一行选择的元素和当前行所选元素最多相隔一列（即位于正下方或者沿对角线向左或者向右的第一个元素）。具体来说，位置 (row, col) 的下一个元素应当是 (row + 1, col - 1)、(row + 1, col) 或者 (row + 1, col + 1) 。
+
+class Solution {
+public:
+    // 备忘录
+    vector<vector<int>> memo;
+
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        int res = INT_MAX;
+        
+        // 备忘录里的值初始化为 66666
+        memo = vector<vector<int>>(n, vector<int>(n, 66666));
+
+        // 终点可能回落到最后一行的任意一列
+        for (int i = 0; i < n; i++) {
+            res = min (res, dp(matrix, n-1, i));
+        }
+
+        return res;
+    }
+
+     // dp函数定义：从第一行（matrix[0][..]）向下落，落到位置 matrix[i][j] 的最小路径和为 dp(matrix, i, j)。
+     // 输入：状态（落入的位置）
+     // 返回：最小路径和
+    int dp(vector<vector<int>>& matrix, int i, int j) {
+        // 1.非法索引检查
+        if (i < 0 || j < 0 ||
+            j >= matrix.size() ||
+            j >= matrix.size()) {
+                return INT_MAX; // 因为我们调用的是 min 函数，最终返回的值是最小值，所以对于不合法的索引，只要 dp 函数返回一个永远不会被取到的最大值即可。
+        }
+
+        // 2.base case
+        // 如何确定：回顾我们的 dp 函数定义：
+        // 从第一行（matrix[0][..]）向下落，落到位置 matrix[i][j] 的最小路径和为 dp(matrix, i, j)。
+        // 根据这个定义，我们就是从 matrix[0][j] 开始下落。那如果我们想落到的目的地就是 i == 0，所需的路径和当然就是 matrix[0][j] 呗。
+        if (i == 0) {
+            return matrix[0][j];
+        }
+
+        // 3.查找备忘录，防止重复计算
+        if (memo[i][j] != 66666) {
+            return memo[i][j];
+        }
+
+        // 状态转移
+        memo[i][j] =  matrix[i][j] + min({
+            dp(matrix, i-1, j),
+            dp(matrix, i-1, j-1),
+            dp(matrix, i-1, j+1) // i - 1, j - 1, j + 1 这几个运算可能会造成索引越界
+        });
+
+        return memo[i][j];
+    }
 };
 
 
