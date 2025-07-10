@@ -34,7 +34,7 @@ vector<vector<int>> res;
 
         // 遍历所有数字
         for (int i = 0; i < nums.size(); i++) {
-            // 排除不合法的选择
+            // 排除不合法的选择，适用于元素不可复选的情况
             if (visited[i]) continue;
 
             // 做选择：将当前数字加入路径

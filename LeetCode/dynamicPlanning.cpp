@@ -142,5 +142,132 @@ public:
     }
 };
 
+// 4.单词拆分
+// 给你一个字符串 s 和一个字符串数组 wordDict 作为字典，
+// 请你判断是否可以利用字典中的单词拼接出 s 。
+class Solution {
+private:
+    vector<string> wordDict;
+    // 记录是否找到一个合法的答案
+    bool found = false;
+
+    // 记录回溯算法的路径
+    vector<string> path;
+
+    // 备忘录,存储不能切分的子串（子树），从而避免重复计算
+    // 注意：这里使用 unordered_set 而不是 vector，因为我们只需要判断是否存在某个子串，而不需要知道它的具体位置
+    // 这里的子串是 s 的一部分，所以我们使用 string 类型
+    unordered_set<string> memo;
+public:
+    // 回溯算法
+    bool wordBreak(string s, vector<string>& wordDict) {
+        this->wordDict = wordDict;
+
+        // 执行回溯算法，穷举所有可能的组合
+        backtrack(s, 0);
+        return found;
+    }
+
+    // 回溯算法框架
+    void backtrack(string& s, int i) {
+        // base case
+        if (found) return; // 如果已经找到一个合法的答案，就不需要继续回溯了
+
+        if (i == s.size()) {
+            found = true; // 找到一个合法的答案
+            return;
+        }
+
+        // 查询子串是否已经计算过
+        string sub = s.substr(i);
+        if (memo.count(sub)) {
+            return; // 如果子串已经计算过，说明它不能切分，直接返回
+        }
+
+        // 回溯算法框架
+        for (string& word : wordDict) {
+            // 看看哪个单词能够匹配 s[i..i+len]
+            int len = word.size();
+
+            // 注意：这里的 i + len 不能超过 s.size()
+            if (i+len <= s.size() && s.substr(i, len) == word) {
+                // 找到一个单词匹配 s[i..i+len]
+                // 做选择
+                path.push_back(word);
+
+                // 继续回溯,进入回溯树的下一层
+                backtrack(s, i + len);
+
+                // 撤销选择
+                path.pop_back();
+            }
+        }
+
+        // 后序位置，将不能切分的子串加入备忘录
+        if (!found) {
+            memo.insert(sub);
+        }
+    }
+};
+
+// 动态规划解法
+class Solution {
+private:
+    unordered_set<string> wordDict;
+    // 备忘录，-1 代表未计算，0 代表无法凑出，1 代表可以凑出
+    vector<int> memo;
+public:
+    // 主函数
+    bool wordBreak(string s, vector<string>& wordDict) {
+        // 转化为哈希集合，快速判断元素是否存在
+        for (auto &word : wordDict) {
+            this->wordDict.insert(word);
+        }
+
+        // 初始化备忘录，-1 表示未计算
+        memo.resize(s.length(), -1);
+
+        return dp(s, 0);
+
+    }
+
+    // dp函数定义：返回 s[i..]是否能够被拼出
+    int dp(string s, int i) {
+        // base case
+        if (i == s.size()) {
+            return true; // 如果 i 到达字符串末尾，说明已经成功拼出
+        }
+
+        // 检查备忘录,防止冗余计算
+        if (memo[i] != -1) {
+            return memo[i] == 0 ? false : true; // 如果备忘录中已经计算过，直接返回结果
+        }
+
+        // 遍历字典中的单词
+        for (auto &word : wordDict) {
+            // 判断 s[i..i+len] 是否等于 word
+            int len = word.size();
+            if (s.substr(i, len) == word) {
+                // 如果匹配成功，继续递归检查剩余部分
+                if (dp(s, i + len)) {
+                    memo[i] = 1; // 标记为可以拼出
+                    return true; // 找到一个可以拼出的方案，直接返回
+                }
+            }
+        }
+
+        memo[i] = 0; // 标记为无法拼出
+        return false; // 如果没有找到任何可以拼出的方案，标记为无法拼出
+    }
+};
+
+// 4.2 单词拆分Ⅱ
+// 给你一个字符串 s 和一个字符串数组 wordDict 作为字典，
+// 请你将 s 中所有可以由字典中的单词组成的部分进行拆分，并返回所有可能的结果。
+class Solution {
+public:
+
+};
+
 
 
