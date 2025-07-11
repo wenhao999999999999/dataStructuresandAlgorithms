@@ -104,3 +104,114 @@ public:
         return res;
     }
 };
+
+// 3.封闭岛屿的数量
+// 给你一个 m x n 的二进制矩阵 grid ，其中 0 代表陆地，1 代表水域。
+// 岛屿是由四面相连的陆地单元格（即上下左右）组成的封闭区域。
+// 封闭岛屿是完全被水域包围的岛屿（即岛屿的所有边界都被水域包围）。
+// 请你返回 封闭岛屿 的 数目 。
+class Solution {
+public:
+    int closedIsland(vector<vector<int>>& grid) {
+        // 获取矩阵的行数和列数
+        int m = grid.size();
+        int n = grid[0].size();
+
+        // 先把边界上的陆地都淹没掉
+        for (int i = 0; i < m; i++) {
+            // 注意这边要用递归把所有和边界相连的陆地都淹没掉
+            dp(grid, i, 0); // 左边界
+            dp(grid, i, n-1); // 右边界
+        }
+
+        for (int j = 0; j < n; j++) {
+            dp(grid, 0, j); // 上边界
+            dp(grid, m-1, j); // 下边界
+        }
+
+        int res = 0;
+
+        // 遍历grid,剩下的岛屿都是封闭岛屿
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    // 如果当前位置是陆地且未访问过
+                    res++; // 增加封闭岛屿数量
+
+                    // 深度优先搜索，淹没所有相连的陆地
+                    dp(grid, i, j);
+                }
+            }
+        }
+
+        return res;
+    }
+
+    // 从 (i, j) 开始，将与之相邻的陆地都变成海水
+    void dp(vector<vector<int>>& grid, int i, int j) {
+        // 非法索引检查
+        if (i < 0 || j < 0 ||
+            i >= grid.size() || j >= grid[0].size()) {
+                return;
+        }
+
+        // 如果当前位置是水域，直接返回
+        if (grid[i][j] == 1) {
+            return;
+        }
+
+        // 将当前位置变成水域
+        grid[i][j] = 1;
+
+        // 淹没上下左右的陆地
+        dp(grid,i-1, j); // 上
+        dp(grid,i+1, j); // 下
+        dp(grid,i, j-1); // 左
+        dp(grid,i, j+1); // 右
+
+    }
+};
+
+// 4.岛屿的最大面积
+// 给你一个 m x n 的二进制矩阵 grid ，其中 0 代表水域，1 代表陆地。
+// 岛屿是由四面相连的陆地单元格（即上下左右）组成的封闭区域。
+// 请你计算并返回该岛屿的最大面积。如果没有岛屿，则返回 0 。
+class Solution {
+public:
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        int res = 0;
+
+        for(int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    // 如果当前位置是陆地，计算岛屿面积
+                    res = max(res, dp(grid, i, j));
+                }
+            }
+        }
+        return res;
+    }
+
+    // dp 函数定义，输入：当前坐标 (i, j)，返回以 (i, j) 为起点的岛屿面积
+    int dp(vector<vector<int>>& grid, int i, int j) {
+        // 非法索引检查
+        if (i < 0 || j < 0 ||
+            i >= grid.size() || j >= grid[0].size()) {
+                return 0; // 如果越界，返回面积为 0
+        }
+
+        // 如果当前位置是水域，直接返回面积为 0
+        if (grid[i][j] == 0) {
+            return 0;
+        }
+
+        // 将当前位置变成水域，避免重复计算
+        grid[i][j] = 0;
+
+        // 计算当前岛屿面积
+        return 1 + dp(grid, i-1, j) + dp(grid, i+1, j) +
+               dp(grid, i, j-1) + dp(grid, i, j+1);
+    }
+};
