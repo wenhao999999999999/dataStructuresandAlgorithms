@@ -271,11 +271,13 @@ vector<vector<int>> BinaryTree::levelOrder() {
         int sz = q.size();
 
         // 存储当前层中所有的叶子节点
+        // 注意：level数组要放到while循环内部，每次清空数组
         vector<int> level;
 
         for (int i = 0; i < sz; i++) {
 
             // 出队列
+            // 注意：在压入层数组前要将队首元素出队
             Node* node = q.front(); q.pop();
 
             cout << "depth = " << depth << " " << node->val << endl;

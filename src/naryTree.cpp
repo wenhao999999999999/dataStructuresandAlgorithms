@@ -35,5 +35,32 @@ void NaryTree::traverse() {
     traverseInside(root);
 }
 
+// 多叉树的层序遍历
+vector<vector<int>> NaryTree::levelOrder() {
+    if (!root) return {};
+    queue<TreeNode*> q;
+    vector<vector<int>> result;
+
+    q.push(root);
+    int depth = 1;
+
+    while (!q.empty()) {
+        int sz = q.size();
+        vector<int> level;
+
+        for (int i = 0; i < sz; i++) {
+            TreeNode* node = q.front();
+            q.pop();
+            level.push_back(node->val);
+
+            for (auto child : node->children) {
+                q.push(child);
+            }
+        }
+        depth++;
+        result.push_back(level);
+    }
+    return result;
+}
 
 

@@ -215,3 +215,65 @@ public:
                dp(grid, i, j-1) + dp(grid, i, j+1);
     }
 };
+
+// 5.子岛屿的数量
+// 给你一个 m x n 的二进制矩阵 grid1 和 grid2 ，其中 0 代表水域，1 代表陆地。
+// 请你返回 grid2 中 子岛屿 的 数目 。子岛屿是指在 grid2 中的一个岛屿，且这个岛屿在 grid1 中也是一个岛屿。
+// 换句话说，子岛屿是指在 grid2 中的一个岛屿，且这个岛屿在 grid1 中也是一个岛屿。
+// 请你返回 grid2 中 子岛屿 的 数目 。
+class Solution {
+public:
+    int countSubIslands(vector<vector<int>>& grid1, vector<vector<int>>& grid2) {
+        int m = grid1.size();
+        int n = grid1[0].size();
+
+
+        // 遍历grid1和grid2，找到所有的子岛屿
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                // 如果grid2中的位置是陆地且grid1中是海水
+                if (grid2[i][j] == 1 && grid1[i][j] == 0) {
+                    // 进行深度优先搜索，淹没所有相连的陆地
+                    dp(grid2, i, j);
+                }
+            }
+        }
+        // 现在 grid2 中的陆地已经被淹没，剩下的陆地都是子岛屿
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid2[i][j] == 1) {
+                    res++;
+                    // 进行深度优先搜索，淹没所有相连的陆地
+                    dp(grid2, i, j);
+                }
+            }
+        }
+
+        return res;
+
+    }
+
+    // 从 (i, j) 开始，将与之相邻的陆地都变成海水
+    void dp(vector<vector<int>>& grid, int i, int j) {
+        // 非法索引检查
+        if (i < 0 || j < 0 ||
+            i >= grid.size() || j >= grid[0].size()) {
+                return;
+        }
+
+        // 如果当前位置是水域，直接返回
+        if (grid[i][j] == 0) {
+            return;
+        }
+
+        // 将当前位置变成水域
+        grid[i][j] = 0;
+
+        // 淹没上下左右的陆地
+        dp(grid, i-1, j); // 上
+        dp(grid, i+1, j); // 下
+        dp(grid, i, j-1); // 左
+        dp(grid, i, j+1); // 右
+    }
+};
