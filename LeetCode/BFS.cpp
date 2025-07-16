@@ -81,6 +81,73 @@ public:
 class Solution {
 public:
     int openLock(vector<string>& deadends, string target) {
-        // 初始编码
+        // 记录需要跳过的死亡密码
+        unordered_set<string> deads(deadends.begin(), deadends.end());
+
+        if (deads.count("0000")) {
+            return -1; // 如果初始状态就是死亡密码，直接返回 -1
+        }
+
+        // 记录已经穷举过的密码，防止走回头路
+        unordered_set<string> visited;
+        visited.insert("0000");
+
+        // 使用队列进行广度优先搜索
+        queue<string> q;
+        q.push("0000");
+        
+        // 记录当前步数
+        int steps = 0;
+
+        while (!q.empty()) {
+            int sz = q.size();
+            
+            // 将当前队列中的所有节点向周围扩散
+            for (int i = 0; i < sz; i++) {
+                // 取出当前节点
+                string cur = q.front();
+                q.pop();
+
+                // 判断是否到达终点
+                if (cur == target) {
+                    return steps;
+                }
+
+                // 将一个节点的合法相邻节点加入队列
+                for (string neighbor : getNeihbors(cur)) {
+                    if (!visited.count(neighbor) &&!deads.count(neighbor)) {
+                        q.push(neighbor);
+                        visited.insert(neighbor);
+                    }
+
+                }
+            }
+
+            // 步数加1
+            steps++;
+        }
+
+        return -1; // 如果无法到达目标状态，返回 -1
+    }
+
+    // 根据当前状态board生成所有可能的邻居状态
+    vector<string> getNeihbors(string board) {
+        vector<string> neighbors;
+        for (int i = 0; i < 4; i++) {
+            // 尝试将第i位数字加1
+            string neighbor = board;
+            int digit = board[i] - '0';
+            digit = (digit + 1) % 10;
+            neighbor[i] = digit + '0';
+            neighbors.push_back(neighbor);
+
+            // 尝试将第 i 位数字减1
+            neighbor = board;
+            digit = board[i] - '0';
+            digit = (digit + 9) % 10;
+            neighbor[i] = digit + '0';
+            neighbors.push_back(neighbor);
+        }
+        return neighbors;
     }
 };
