@@ -1,5 +1,6 @@
 // BFS (Breadth-First Search) 算法解题套路框架
 #include <bits/stdc++.h>
+#include "../include/binaryTree.h"
 
 using namespace std;
 
@@ -149,5 +150,69 @@ public:
             neighbors.push_back(neighbor);
         }
         return neighbors;
+    }
+};
+
+// 3.完全二叉树插入器
+// 完全二叉树 是每一层（除最后一层外）都是完全填充（即，节点数达到最大）的，并且所有的节点都尽可能地集中在左侧。
+// 设计一种算法，将一个新节点插入到一棵完全二叉树中，并在插入后保持其完整。
+// 实现 CBTInserter 类:
+// CBTInserter(TreeNode root) 使用头节点为 root 的给定树初始化该数据结构；
+// CBTInserter.insert(int v)  向树中插入一个值为 Node.val == val的新节点 TreeNode。使树保持完全二叉树的状态，并返回插入节点 TreeNode 的父节点的值；
+// CBTInserter.get_root()  返回树的头节点。
+
+class CBTInserter {
+private:
+    TreeNode* root;
+    queue<TreeNode*> q;
+public:
+    // 构造函数，初始化根节点并使用广度优先搜索找到所有可以插入子节点的位置
+    CBTInserter(TreeNode* root) {
+        this->root = root;
+
+        // BFS 找到底部可插入的节点
+        queue<TreeNode*> temp;
+        temp.push(root);
+        while (!temp.empty()) {
+            TreeNode* node = temp.front();
+            temp.pop();
+            if (node->left) {
+                temp.push(node->left);
+            }
+            if (node->right) {
+                temp.push(node->right);
+            }
+
+            if (node->left == nullptr || node->right == nullptr) {
+                // 找到完全二叉树的底部底部可以插入的节点
+                q.push(node);
+            }
+        
+        }
+    }
+    
+    // 插入新节点到完全二叉树中，并返回插入节点的父节点值
+    int insert(int v) {
+        TreeNode* node = new TreeNode(v);
+        TreeNode* cur = q.front();
+
+        // 进行插入
+        if (cur->left == nullptr) {
+            cur->left = node;
+        } else if (cur->right == nullptr) {
+            cur->right = node;
+            // 当且仅当插入节点是父节点的右孩子时，才需要更新父节点的值
+            q.pop();
+        }
+
+        // 新节点的左右节点也是可以插入的
+        q.push(node);
+        return cur->val;
+
+    }
+
+    // 返回完全二叉树的根节点
+    TreeNode* get_root() {
+        return root;
     }
 };
