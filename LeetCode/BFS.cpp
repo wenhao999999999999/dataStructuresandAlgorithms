@@ -216,3 +216,120 @@ public:
         return root;
     }
 };
+
+
+// 4.填充每个节点的下一个右侧节点指针
+// 给定一个二叉树：
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+};
+// 填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL 。
+// 初始状态下，所有 next 指针都被设置为 NULL 。
+
+class Solution {
+public:
+    Node* connect(Node* root) {
+        if (!root) {
+            return nullptr;
+        }
+
+        // 初始化队列
+        queue<Node*> q;
+
+        // 根节点入队
+        q.push(root);
+
+        // 每一层第一个节点的 next 指针指向 NULL
+        Node* prev = nullptr;
+        // BFS
+        while (!q.empty()) {
+            int sz = q.size();
+
+            for (int i = 0; i < sz; i++) {
+                Node* cur = q.front();
+                q.pop();
+                // 如果前序节点不是每一层第一个节点，则将 prev 节点的 next 指针指向当前节点
+                if (prev) {
+                    prev->next = cur;
+                }
+
+                prev = cur;
+
+                // 左右孩子入队
+                if (cur->left) {
+                    q.push(cur->left);
+                }
+
+                if (cur->right) {
+                    q.push(cur->right);
+                }
+            }
+
+            prev = nullptr;
+        }
+        return root;
+    }
+};
+
+// 5. 二叉树的最大宽度
+// 每一层的 宽度 被定义为该层最左和最右的非空节点（即，两个端点）之间的长度。将这个二叉树视作与满二叉树结构相同，两端点间会出现一些延伸到这一层的 null 节点，这些 null 节点也计入长度。
+// 给你一个二叉树的根节点 root ，返回其最大宽度。
+
+// 完全二叉树编号+层序遍历解法：
+class Solution {
+public: 
+    // 记录节点和对应的编号
+    struct Pair {
+        TreeNode* node;
+        unsigned long long id;
+
+        Pair(TreeNode* node, unsigned long long id): node(node), id(id) {}
+    };
+    int widthOfBinaryTree(TreeNode* root) {
+        if (!root) return 0;
+
+        // 记录最大宽度
+        int maxWidth = 0;
+
+        // 层序遍历
+        queue<Pair> q;
+        q.push(Pair(root, 1));
+        while (!q.empty()) {
+            int sz = q.size();
+            
+            // 注意：起始编号和结束编号的数据类型要用 unsigned long long，否则会溢出
+            unsigned long long start = 0;
+            unsigned long long end = 0;
+
+            for (int i = 0; i < sz; i++) {
+                Pair cur = q.front();
+                q.pop();
+
+                // 队首元素是当前层的第一个元素
+                if (i == 0) start = cur.id;
+
+                // 队尾元素是当前层的最后一个元素
+                if (i == sz - 1) end = cur.id;
+
+                if (cur.node->left) {
+                    q.push(Pair(cur.node->left, 2 * cur.id));
+                }
+
+                if (cur.node->right) {
+                    q.push(Pair(cur.node->right, 2 * cur.id + 1));
+                }
+            }
+
+            // 计算当前层的宽度
+            unsigned long long width = end - start + 1;
+
+            // 更新最大宽度
+            maxWidth = max(maxWidth, static_cast<int>(width));
+        }
+
+        return maxWidth;
+    }
+};

@@ -269,5 +269,96 @@ public:
 
 };
 
+// 5. 子序列类型问题
+// 5.1 最大子数组和
+// 给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+// 滑动窗口解法：大于等于0时，扩大窗口；小于0时，缩小窗口
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int n = nums.size();
+        int left = 0;
+        int right =0;
+        int max_sum = INT_MIN;
+        int cur_sum = 0;
+
+        while (right < n) {
+            // 扩大窗口
+            cur_sum += nums[right];
+            right++;
+
+            // 更新答案
+            max_sum = max(max_sum, cur_sum);
+
+            // 缩小窗口
+            while (cur_sum < 0) {
+                cur_sum -= nums[left];
+                left++;
+            }
+        }
+
+        return max_sum;
+    }
+};
+
+// 动态规划解法：以 nums[i] 为结尾的「最大子数组和」为 dp[i]，状态转移方程为：
+// dp[i] = max(dp[i-1] + nums[i], nums[i])
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return 0;
+
+        // dp 数组定义：dp[i] 表示以 nums[i] 这个数结尾的最大子数组和
+        vector<int> dp(n, 0);
+
+        // base case
+        dp[0] = nums[0];
+
+        // 状态转移
+        for (int i = 1; i < n; i++) {
+            dp[i] = max(dp[i-1]+nums[i], nums[i]);
+        }
+
+        // 找到最大值
+        int max_sum =  INT_MIN;
+        for (int i = 0; i < n; i++) {
+            max_sum = max(max_sum, dp[i]);
+        }
+
+        return max_sum;
+    }
+};
+
+// 前缀和解法：
+// 前缀和数组 pre_sum[i] 表示 nums[0..i-1] 的前缀和，即 pre_sum[i] = nums[0] + nums[1] + ... + nums[i-1]
+// 则preSum[i+1] - preSum[j] 其实就是子数组 nums[j..i] 之和。那么反过来想，以 nums[i] 为结尾的最大子数组之和是多少？其实就是 preSum[i+1] - min(preSum[0..i])。
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return 0;
+
+        // 前缀和数组
+        vector<int> pre_sum(n+1, 0);
+        for (int i = 1; i <= n; i++) {
+            pre_sum[i] = pre_sum[i-1] + nums[i-1];
+        }
+
+        // 最大子数组和
+        int max_sum = INT_MIN;
+        int min_pre_sum = INT_MAX;
+        for (int i = 0; i < n; i++) {
+            min_pre_sum = min(min_pre_sum, pre_sum[i]);
+            max_sum = max(max_sum, pre_sum[i+1] - min_pre_sum);
+        }
+
+        return max_sum;
+    }
+};
+
+// 5.2 最长公共子序列
+
 
 
