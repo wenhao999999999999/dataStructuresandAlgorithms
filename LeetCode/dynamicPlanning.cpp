@@ -359,6 +359,75 @@ public:
 };
 
 // 5.2 最长公共子序列
+// 给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
 
+// 动态规划解法：自顶向下
+class Solution {
+private:
+    // 备忘录，消除重叠子问题
+    vector<vector<int>> memo;
+
+public:
+    int longestCommonSubsequence(string text1, string text2) {
+        int m = text1.size();
+        int n = text2.size();
+
+        // 备忘录初始化值为-1，表示未计算
+        memo = vector<vector<int>> (m, vector<int>(n, -1));
+        return dp(text1, text2, 0, 0);
+    }
+
+    // 状态转移方程定义：计算 s1[i..] 和 s2[j..] 的最长公共子序列的长度
+    int dp(string s1, string s2, int i, int j) {
+        // base case
+        if (i == s1.size() || j == s2.size()) {
+            return 0;
+        }
+
+        // 避免重复计算
+        if (memo[i][j] != -1) return memo[i][j];
+
+        // 状态转移
+        if (s1[i] == s2[j]) {
+            // s1[i] 和 s2[j] 必然在公共子序列中，加s1[i+1..] 和 s2[j+1..]的最长公共子序列长度， 就是答案
+            memo[i][j] = 1+dp(s1, s2, i+1, j+1);
+        }else {
+            // s1[i] 和 s2[j] 中至少有一个字符不在公共子序列中，穷举三种情况的结果，取其中对大的结果
+            memo[i][j] = max (
+                // 情况一：s1[i] 不在公共子序列中
+                dp (s1, s2, i+1, j),
+                // 情况二： s2[j] 不在公共子序列中
+                dp (s1, s2, i, j+1)
+            );
+        }
+
+        return memo[i][j];
+    }
+};
+
+// 动态规划解法：自底向上
+class Solution {
+public:
+    int longestCommonSubsequence(string text1, string text2) {
+        int m = text1.size();
+        int n = text2.size();
+
+        // 定义二维数组 dp，dp[i][j] 表示 text1[0..i-1] 和 text2[0..j-1] 的最长公共子序列的长度
+        vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
+        // 目标：text1[0..m-1] 和 text2[0..n-1] 的最长公共子序列的长度，即 dp[m][n]
+        // base case: dp[0][..] = dp[..][0] = 0
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (text1[i-1] == text2[j-1]) {
+                    dp[i][j] = 1 + dp[i-1][j-1];
+                } else {
+                    dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
 
 
