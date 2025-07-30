@@ -1,6 +1,8 @@
 // #include <bits/stdc++.h>
 // using namespace std;
 
+
+// 已知散点坐标，求包围所有散点的矩形的最小面积
 // struct Point{
 // float x;
 // float y;
@@ -16,7 +18,7 @@
 //     }
 // };
 
-// 已知散点坐标，求包围所有散点的矩形的最小面积
+
 #include <iostream>
 #include <vector>
 #include <cmath>
