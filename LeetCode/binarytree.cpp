@@ -164,3 +164,117 @@ public:
 
 // 4.从叶节点开始的最小字符串
 // 给定一颗根结点为 root 的二叉树，树中的每一个结点都有一个 [0, 25] 范围内的值，分别代表字母 'a' 到 'z'。返回 按字典序最小 的字符串，该字符串从这棵树的一个叶结点开始，到根结点结束。
+
+// 递归遍历解法
+class Solution {
+private:
+    // 存储当前路径
+    string path;
+    // 存储最短字符串
+    string res;    
+public:
+    string smallestFromLeaf(TreeNode* root) {
+        traverse(root);
+        return res;
+    }
+
+    // 递归遍历函数
+    void traverse (TreeNode* root) {
+        if (!root) return;
+
+        // base case
+        if (root->left == nullptr && root->right == nullptr) {
+            // 前序位置，压入元素
+            path.push_back('a' + root->val);
+
+            // 反转字符串
+            reverse(path.begin(), path.end());
+
+            // 第一次遍历或者当前路径字符串更小
+            if (res.empty() || res > path) {
+                res = path;
+            }
+
+            // 注意：恢复，正确维护 path 中的元素
+            reverse(path.begin(), path.end());
+
+            // 注意：后序位置，撤销选择
+            path.pop_back();
+            return;
+        }
+
+        // 前序位置
+        path.push_back('a' + root->val);
+
+        // 递归遍历左右子树
+        traverse(root->left);
+        traverse(root->right);
+
+        // 注意：后序位置，撤销选择
+        path.pop_back();
+    }
+};
+
+// 5.从根到叶的二进制数之和
+// 给出一棵二叉树，其上每个结点的值都是 0 或 1 。每一条从根到叶的路径都代表一个从最高有效位开始的二进制数。对树上的每一片叶子，我们都要找出从根到该叶子的路径所表示的数字。
+
+// DFS解法：首先求出每一条路径，接着将每一条路径转换为十进制数，最后求和
+class Solution {
+private:
+    // 存储当前路径的结点
+    vector<TreeNode*> path;
+
+    // 存储结果
+    int sum = 0;
+
+    // 存储所有路径的十进制数
+    vector<int> nums;
+public:
+    // 主函数入口 
+    int sumRootToLeaf(TreeNode* root) {
+        traverse(root);
+        for (int i = 0; i < nums.size(); i++) {
+            sum += nums[i];
+        }
+        return sum;
+    }
+
+    // DFS
+    void traverse(TreeNode* root) {
+        // 判断当前节点是否为空
+        if (root == nullptr) return;
+
+        // base case
+        if (root->left == nullptr && root->right == nullptr) {
+            // 前序位置，压入结点
+            path.push_back(root);
+
+            // 将当前路径转换为十进制数字并保存
+            nums.push_back(pathToNum(path));
+
+            // 后序位置，弹出当前结点
+            path.pop_back();
+            return;
+        }
+
+        // 前序位置，压入结点
+        path.push_back(root);
+
+        // 递归遍历左右子树
+        traverse(root->left);
+        traverse(root->right);
+
+        // 后序位置，弹出结点
+        path.pop_back();
+    }
+    
+    // 将每一条结点路径转换为十进制数字
+    int pathToNum (vector<TreeNode*> path) {
+        int num = 0;
+        for (int i = 0; i < path.size(); i++) {
+            // 注意：第一个结点是高位
+            num += path[i]->val *  pow(2, path.size()-i-1) ; 
+        }
+        return num;
+    }
+};

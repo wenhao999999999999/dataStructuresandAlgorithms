@@ -2,57 +2,108 @@
 # include <bits/stdc++.h>
 using namespace std;
 
-// 1. 全排列
+// 1. 全排列（元素不重，不可复选）
+// 给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+class Solution {
+    // 存储结果
+    vector<vector<int>> res;
+
+    // 存储当前路径
+    vector<int> path;
+
+    // 备忘录:记录已经访问过的元素
+    vector<bool> visited;
+public:
+    vector<vector<int>> permute(vector<int> &nums) {
+        // 初始化备忘录
+        visited.resize(nums.size(), 0);
+        backtracking(nums);
+        return res;
+    }
+
+    // 回溯函数
+    void backtracking(vector<int> &nums) {
+         
+        // base case
+        if (path.size() == nums.size()) {
+            res.push_back(path);
+        }
+
+        for (int i = 0; i < nums.size(); i++) {
+            // 判断当前元素是否已经在路径中
+            if (visited[i]) continue; 
+
+            // 1.做选择
+            path.push_back(nums[i]);
+            visited[i] = 1;
+
+            // 2.递归
+            backtracking(nums);
+
+            // 3.撤销选择
+            path.pop_back();
+            visited[i] = 0;
+        }
+          
+    }
+};
+
+// 全排列Ⅱ（元素可重不可复选）
+// 给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。
+// 解题思路：保证相同元素在排列中的相对位置保持不变。
 class Solution {
 public:
-// 存储全排列
-vector<vector<int>> res;
+    // 存储结果
+    vector<vector<int>> res;
 
-    // 主函数：输入一组不重复的数字，返回它们的全排列
-    vector<vector<int>> permute(vector<int>& nums) {    
-        // 记录路径
-        vector<int> path;
+    // 存储当前路径
+    vector<int> path;
 
-        // 记录是否访问过
-        vector<bool> visited(nums.size(), false);
+    // 备忘录:记录已经访问过的元素
+    vector<bool> visited;
 
-        // 回溯函数
-        backtrack(nums, path, visited);
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        // 排序，为剪支做准备
+        sort(nums.begin(), nums.end());
+
+        // 注意：初始化visited 数组
+        visited.resize(nums.size(), 0);
+
+        backtracking(nums);
 
         return res;
     }
 
-    // 回溯函数：生成全排列
-    // 输入：nums 数组，当前路径 path，访问标记 visited
-    void backtrack(vector<int>& nums, vector<int>& path, vector<bool>& visited) {
-        // base case: 路径长度等于数组长度
+    // 回溯函数
+    void backtracking(vector<int> &nums) {
+         
+        // base case
         if (path.size() == nums.size()) {
-            // 找到一个全排列，加入结果集
             res.push_back(path);
-            return;
         }
 
-        // 遍历所有数字
         for (int i = 0; i < nums.size(); i++) {
-            // 排除不合法的选择，适用于元素不可复选的情况
-            if (visited[i]) continue;
+            // 判断当前元素是否已经在路径中
+            if (visited[i]) continue; 
 
-            // 做选择：将当前数字加入路径
+            // 注意：固定相同元素的使用顺序，只有相同元素的前一个元素使用过了，才能使用当前元素
+            if (i > 0 && nums[i-1] == nums[i] && !visited[i-1]) continue;
+
+            // 1.做选择
             path.push_back(nums[i]);
+            visited[i] = 1;
 
-            // 标记为已访问
-            visited[i] = true;
+            // 2.递归
+            backtracking(nums);
 
-            // 递归调用：继续生成下一个数字
-            backtrack(nums, path, visited);
-
-            // 撤销选择：从路径中移除当前数字
+            // 3.撤销选择
             path.pop_back();
-            visited[i] = false;
+            visited[i] = 0;
         }
-
-    }
+          
+    }    
 };
+
 
 // 2.岛屿问题
 class Solution {
@@ -275,5 +326,193 @@ public:
         dp(grid, i+1, j); // 下
         dp(grid, i, j-1); // 左
         dp(grid, i, j+1); // 右
+    }
+};
+
+// 6.子集（元素不重复不可复选）
+// 给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+class Solution {
+private:
+    vector<vector<int>> res;
+    vector<int> path;
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        backtracking(nums, 0);
+        return res;
+    }
+
+    // 回溯函数
+    void backtracking(vector<int>& nums, int start) {
+        // 前序位置，每条路径都是子集
+        res.push_back(path);
+
+        for (int i = start; i < nums.size(); i++) {
+            // 1.做选择
+            path.push_back(nums[i]);
+
+            // 2.递归
+            // 注意：通过参数start避免子集重复
+            backtracking(nums, i+1);
+
+            // 3.撤销选择
+            path.pop_back();
+        }
+    }
+};
+
+// 子集Ⅱ（元素可重复不可复选）
+// 解题思路：先把原数组排序，让重复元素相邻排列，如果发现 nums[i] == nums[i-1] ，则跳过
+class Solution {
+private:
+     vector<vector<int>> res;
+     vector<int> path;
+public:
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        // 先对原数组进行排序
+        sort(nums.begin(), nums.end());
+
+        backtrack(nums, 0);
+
+        return res;
+    }
+    
+    void backtrack(vector<int>& nums, int start) {
+        // 前序位置
+        res.push_back(path);
+
+        for (int i = start; i < nums.size(); i++) {
+            // 如果当前元素和前一个元素相同，就跳过
+            // 注意：这里的第一个判定条件
+            if (i > start && nums[i-1] == nums[i]) continue;
+
+            path.push_back(nums[i]);
+
+            backtrack(nums, i+1);
+
+            path.pop_back();
+        }
+    }
+};
+
+// 7.组合
+// 给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。你可以按 任何顺序 返回答案。
+// 解题思路：只保留元素数量符合要求的那一层子集
+class Solution {
+private:
+    vector<int> path;
+    vector<vector<int>> res;
+public:
+    vector<vector<int>> combine(int n, int k) {
+        // 注意：从1开始
+        backtrack(1, n, k);
+        return res;
+    }
+
+    void backtrack(int start, int n, int k) {
+        // base case
+        if (path.size() == k) {
+            res.push_back(path);
+            // 注意：可以提前终止
+            return;
+        }
+
+        // 回溯
+        // 注意：循环判定条件包含n
+        for (int i = start; i <= n; i++) {
+            // choose
+            path.push_back(i);
+
+            // recurse
+            backtrack(i+1, n ,k);
+
+            // 撤销选择
+            path.pop_back();
+        }
+    }
+};
+
+// 组合Ⅱ
+// 给定一个候选人编号的集合 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。candidates 中的每个数字在每个组合中只能使用 一次 。
+// 解题思路：
+class Solution {
+public:
+    vector<vector<int>> res;
+    vector<int> path;
+    int cursum = 0;
+
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        // 注意：要先排序，才能实现剪支
+        sort(candidates.begin(), candidates.end());
+        backtrack(candidates, target, 0);
+        return res;
+    }
+
+    void backtrack(vector<int>& candidates, int target, int start) {
+        // base case 
+        if (cursum == target) {
+            res.push_back(path);
+            return;
+        }
+
+        // 注意：如果超过目标和超过 target 也直接返回
+        if (cursum > target) return;
+
+        for (int i = start; i < candidates.size(); i++) {
+            //注意：剪掉数字相同的相邻分支
+            if (i > start && candidates[i-1] == candidates[i]) {
+                continue;
+            }
+
+            path.push_back(candidates[i]);
+            cursum += candidates[i];
+
+            backtrack(candidates, target, i+1);
+
+            path.pop_back();
+            cursum -= candidates[i];
+        }
+    }
+};
+
+
+// 回溯算法练习题
+// 连续差相同的数字
+// 解题思路：看作是元素无重可复选的全排列问题，增加两条剪支逻辑
+class Solution {
+public:
+    // 记录当前路径组成的数字的值
+    int track = 0;
+    // 记录当前数字的位数
+    int digit = 0;
+
+    // 存储结果
+    vector<int> res;
+
+    vector<int> numsSameConsecDiff(int n, int k) {
+        backtrack(n,k);
+        return res;
+    }
+
+    void backtrack(int n, int k) {
+        // base case
+        if (digit == n) {
+            res.push_back(track);
+            return;
+        }
+
+        for (int i = 0; i <=9; i++) {
+            // 剪支1:第一位不能是0
+            if (digit == 0 && i == 0) continue;
+            // 剪支2：相邻的数字差必须是k
+            if (digit > 0 && abs(i - track % 10) != k) continue;
+
+            track = track * 10 + i;
+            digit++;
+
+            backtrack(n,k);
+
+            track = track / 10;
+            digit--;
+        }
     }
 };
