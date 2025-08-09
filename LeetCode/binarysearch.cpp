@@ -64,6 +64,7 @@ int left_bound(vector<int>& nums, int target) {
 }
 
 // 寻找右侧边界
+// 如果 target 不存在，搜索右侧边界的二分搜索返回的索引是小于 target 的最大索引。
 int right_bound(vector<int>& nums, int target) {
     int left = 0;
     int right = nums.size() - 1;
@@ -87,7 +88,7 @@ int right_bound(vector<int>& nums, int target) {
 }
 
 // 二分查找
-// 给定字符串 s 和字符串数组 words, 返回  words[i] 中是s的子序列的单词个数 。字符串的 子序列 是从原始字符串中生成的新字符串，可以从中删去一些字符(可以是none)，而不改变其余字符的相对顺序。
+//1. 给定字符串 s 和字符串数组 words, 返回  words[i] 中是s的子序列的单词个数 。字符串的 子序列 是从原始字符串中生成的新字符串，可以从中删去一些字符(可以是none)，而不改变其余字符的相对顺序。
 class Solution {
 public:
     int numMatchingSubseq(string s, vector<string>& words) {

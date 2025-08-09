@@ -106,9 +106,10 @@ public:
 
 
 // 2.岛屿问题
+// 解题思路：用 DFS 方法遍历二维数组中的元素；如果发现陆地，结果+1；将与该陆地相连的区域淹没
 class Solution {
 public:
-    // 二维矩阵遍历框架
+    // 从 (i, j) 开始，将与之相邻的陆地都变成海水
     void dfs(vector<vector<char>>& grid, int i, int j) {
         int m = grid.size();
         int n = grid[0].size();
@@ -116,10 +117,11 @@ public:
         // 边界条件：如果越界或已经访问过，直接返回
         if (i < 0 || j < 0 || i >= m || j >= n) return;
 
+        
         // 如果当前位置是水，直接返回
         if (grid[i][j] == '0') return;
 
-        // 将 (i, j) 变成海水
+        // 前序位置：将 (i, j) 变成海水
         grid[i][j] = '0';
 
         // 淹没上下左右的陆地
@@ -147,7 +149,7 @@ public:
                     // 增加岛屿数量
                     res++;
 
-                    // 深度优先搜索，标记所有相连的陆地
+                    // 然后使用 DFS 将岛屿淹了
                     dfs(grid, i, j);
                 }
             }
