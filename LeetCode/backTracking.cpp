@@ -2,6 +2,9 @@
 # include <bits/stdc++.h>
 using namespace std;
 
+// 回溯/ DFS 算法解题框架：
+// DFS/回溯算法的本质就是递归遍历一棵穷举树（多叉树），而多叉树的递归遍历又是从二叉树的递归遍历衍生出来的。所以我说 DFS/回溯算法的本质是二叉树的递归遍历。
+
 // 1. 全排列（元素不重，不可复选）
 // 给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
 class Solution {
@@ -516,5 +519,52 @@ public:
             track = track / 10;
             digit--;
         }
+    }
+};
+
+// 电话号码的字母组合
+// 给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+// 解题思路：首先用一个二维数组存储每个数组能表示的字符
+class Solution {
+private:
+    vector<string> res;
+    vector<vector<char>> numToChar = {
+        {'a','b','c'},
+        {'d','e','f'},
+        {'g','h','i'},
+        {'j','k','l'},
+        {'m','n','o'},
+        {'p','q','r','s'},
+        {'t','u','v'},
+        {'w','x','y','z'}
+    };
+    string path;
+public:
+    vector<string> letterCombinations(string digits) {
+        if (digits.empty()) return {};
+        backTrack(digits, 0);
+        return res;
+    }
+
+    // 回溯函数
+    void backTrack(string digits, int i) {
+        // base case
+        if (path.size() == digits.size()) {
+            res.push_back(path);
+            return;
+        }
+
+        
+        int index = digits[i] - '0' - 2;
+        for (auto c : numToChar[index]) {
+            // 做选择
+            path.push_back(c);
+            // 递归
+            backTrack(digits, i+1);
+            // 撤销选择
+            path.pop_back();
+        }
+    
     }
 };

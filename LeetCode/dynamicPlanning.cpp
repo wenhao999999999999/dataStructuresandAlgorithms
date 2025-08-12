@@ -435,4 +435,62 @@ public:
     }
 };
 
+// 爬楼梯
+// 假设你正在爬楼梯。需要 n 阶你才能到达楼顶。每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+class Solution {
+private:
+    int res = 0;
+    // 备忘录
+    vector<int> memo;
+public:
+    int climbStairs(int n) {
+        memo.resize(n+1, -1);
+        res = dp(n);
+        return res;
+    }
 
+    // dp 函数定义：输入需要爬的总楼梯阶数（状态）；确定选择：每次可以爬1阶或者2阶；返回值：爬到楼顶的方法的总数
+    int dp (int n) {
+        // base case
+        if (n <= 0) return 0;
+        if (n == 1) return 1; 
+        if (n == 2) return 2;
+
+        if (memo[n] != -1) return memo[n];
+
+        // 如果选择爬1阶，有几种方法
+        memo[n] = dp(n-1) + dp(n-2);
+
+        return memo[n];
+    }
+};
+
+// 最大子数组和
+// 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。子数组是数组中的一个连续部分。
+// 解题思路:dp函数返回以当前元素结尾的连续子数组的最大和
+class Solution {
+private:
+    int maxSum = 0;
+    int curSum = 0;
+public:
+    int maxSubArray(vector<int>& nums) {
+        if (nums.size() == 1) return nums[0];
+        // 注意:初始化要更新为第一个元素
+        maxSum = nums[0];
+        dp(nums, nums.size() - 1);
+        return maxSum;
+    }
+
+    // dp 函数定义:确定状态,当前连续子数组和;确定选择,数组索引;返回值,以索引 i 结尾的连续子数组和的最大值;
+    int dp (vector<int>& nums, int i) {
+        // base case
+        if (i == 0) return nums[i];
+
+        // 注意:按照 dp 函数定义:curSum 是以 i 结尾的连续子数组和的最大值,并不是全局最大值
+        curSum = max(nums[i], dp(nums, i-1) + nums[i]);
+        // 注意:这里要更新全局最大值
+        maxSum = max(curSum, maxSum);
+
+        return curSum;
+    }
+};

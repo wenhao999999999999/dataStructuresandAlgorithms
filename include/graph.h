@@ -55,6 +55,8 @@ public:
     const vector<Edge>& getNeighbors(int from) {
         return graph[from];
     }
+
+    virtual int size() = 0;
 };
 
 // 邻接矩阵实现的图结构
@@ -148,6 +150,124 @@ public:
 
 // 所以并查集算法最终的目标，就是要尽可能降低树的高度，如果能保持树高为常数，那么上述方法的复杂度就都是 O(1) 了。
 
+// 图结构的 DFS/BFS 遍历
+// 图的遍历比多叉树的遍历多了一个 visited 数组，用来记录被遍历过的节点，避免遇到环时陷入死循环。
+// 深度优先搜索（DFS）
+// (1) 遍历图的所有节点（一维 Visited 数组）
+// void traverse(const Graph& graph, int s, std::vector<bool>& visited) {
+//     // base case
+//     if (s < 0 || s >= graph.size()) {
+//         return;
+//     }
+//     if (visited[s]) {
+//         // 防止死循环
+//         return;
+//     }
+//     // 前序位置
+//     visited[s] = true;
+//     std::cout << "visit " << s << std::endl;
+//     for (const Graph::Edge& e : graph.neighbors(s)) {
+//         traverse(graph, e.to, visited);
+//     }
+//     // 后序位置
+// }
 
+// (2) 遍历所有变（二维 Visited 数组）
+// 图节点
+class Vertex {
+public:
+    int id;
+    vector<Vertex*> neighbors;
+    
+    Vertex(int i = 0) : id(i) {}
+};
 
+// 遍历图的边
+// 需要一个二维 visited 数组记录被遍历过的边，visited[u][v] 表示边 u->v 已经被遍历过
+void traverseEdges(Vertex* s, vector<vector<bool>>& visited) {
+    // base case
+    if (s == nullptr) {
+        return;
+    }
+    for (Vertex* neighbor : s->neighbors) {
+        // 如果边已经被遍历过，则跳过
+        if (visited[s->id][neighbor->id]) {
+            continue;
+        }
+        // 标记并访问边
+        visited[s->id][neighbor->id] = true;
+        cout << "visit edge: " << s->id << " -> " << neighbor->id << endl;
+        traverseEdges(neighbor, visited);
+    }
+}
+
+// (3) 遍历所有路径(onpath 数组)
+// 对于图结构来说，由起点 src 到目标节点 dest 的路径可能不止一条。我们需要一个 onPath 数组，在进入节点时（前序位置）标记为正在访问，退出节点时（后序位置）撤销标记，这样才能遍历图中的所有路径，从而找到 src 到 dest 的所有路径：
+// 下面的算法代码可以遍历图的所有路径，寻找从 src 到 dest 的所有路径
+// onPath 和 path 记录当前递归路径上的节点
+// vector<bool> onPath(graph.size());
+// list<int> path;
+
+// void traverse(Graph& graph, int src, int dest) {
+//     // base case
+//     if (src < 0 || src >= graph.size()) {
+//         return;
+//     }
+//     if (onPath[src]) {
+//         // 防止死循环（成环）
+//         return;
+//     }
+//     if (src == dest) {
+//         // 找到目标节点
+//         cout << "find path: ";
+//         for (auto it = path.begin(); it != path.end(); it++) {
+//             cout << *it << "->";
+//         }
+//         cout << dest << endl;
+//         return;
+//     }
+
+//     // 前序位置
+//     onPath[src] = true;
+//     path.push_back(src);
+//     for (const Edge& e : graph.neighbors(src)) {
+//         traverse(graph, e.to, dest);
+//     }
+//     // 后序位置
+//     path.pop_back();
+//     onPath[src] = false;
+// }
+
+// 广度优先搜索（BFS）
+    // 图结构的广度优先搜索其实就是多叉树的层序遍历，无非就是加了一个 visited 数组来避免重复遍历节点。
+    // BFS 遍历也需要区分遍历所有「节点」和遍历所有「路径」，但是实际上 BFS 算法一般只用来寻找那条最短路径
+
+// 从 s 开始 BFS 遍历图的所有节点，且记录遍历的步数
+// void bfs (const Graph& graph, int s) {
+//     //  vector<bool> visited(graph.size(), false);
+//     queue<int> q;
+//     q.push(s);
+//     // visited[s] = true;
+
+//     // 记录从 s 开始走到当前节点的步数
+//     int step = 0;
+
+//     while(!q.empty()) {
+//         int size = q.size();
+//         int curNode = q.front();
+//         q.pop();
+
+//         for (const Edge& e : graph.neighbors(cur)) {
+//             if (visited[e.to]) {
+//                 continue;
+//             }
+
+//             q.push(e.to);
+//             visited[e.to] = true;
+//         }
+//         step++;
+//     }
+
+    
+// }
         

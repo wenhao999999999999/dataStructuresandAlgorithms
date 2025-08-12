@@ -1,8 +1,14 @@
 // BFS (Breadth-First Search) 算法解题套路框架
 #include <bits/stdc++.h>
 #include "../include/binaryTree.h"
-
 using namespace std;
+
+// BFS 算法解题框架
+// DFS/回溯/BFS 这类算法，本质上就是把具体的问题抽象成树结构，然后遍历这棵树进行暴力穷举，所以这些穷举算法的代码本质上就是树的遍历代码。
+// BFS 算法的本质就是遍历一幅图，下面你就会看到了，BFS 的算法框架就是 图结构的 DFS/BFS 遍历 中遍历图节点的算法代码。而图的遍历算法其实就是多叉树的遍历算法加了个 visited 数组防止死循环；多叉树的遍历算法又是从二叉树遍历算法衍生出来的。所以我说 BFS 算法的本质就是二叉树的层序遍历。
+// BFS 算法经常用来求解最短路径问题
+
+
 
 // 1. 滑动谜题
 class Solution {
@@ -331,5 +337,69 @@ public:
         }
 
         return maxWidth;
+    }
+};
+
+// 6.最小基因变化
+// 题目描述：基因序列可以表示为一条由 8 个字符组成的字符串，其中每个字符都是 'A'、'C'、'G' 和 'T' 之一。
+// 假设我们需要调查从基因序列 start 变为 end 所发生的基因变化。一次基因变化就意味着这个基因序列中的一个字符发生了变化。例如，"AACCGGTT" --> "AACCGGTA" 就是一次基因变化。
+// 另有一个基因库 bank 记录了所有有效的基因变化，只有基因库中的基因才是有效的基因序列。（变化后的基因必须位于基因库 bank 中）
+// 给你两个基因序列 start 和 end ，以及一个基因库 bank ，请你找出并返回能够使 start 变化为 end 所需的最少变化次数。如果无法完成此基因变化，返回 -1 。
+// 注意：起始基因序列 start 默认是有效的，但是它并不一定会出现在基因库中。
+// 解题思路：
+class Solution {
+public:
+    int minMutation(string startGene, string endGene, vector<string>& bank) {
+        // 将基因库存入哈希表便于快速查找
+        unordered_set<string> bankSet(bank.begin(), bank.end());
+        if (bankSet.find(endGene) == bankSet.end()) {
+            return -1;
+        }
+        vector<char> AGCT = {'A', 'G', 'C', 'T'};
+
+        // BFS 标准框架
+        queue<string> q;
+        unordered_set<string> visited;
+        q.push(startGene);
+
+        // 注意：这里是用哈希表去标记可能的基因序列，不是数组
+        visited.insert(startGene);
+        int step = 0;
+        while (!q.empty()) {
+            // 注意：计算队列中元素的个数应该在循环内，因为队列中元素的个数会动态变化
+            int sz = q.size();
+            for (int j = 0; j < sz; j++) {
+                string cur = q.front();
+                q.pop();
+                if (cur == endGene) {
+                    return step;
+                }
+                // 向周围扩散
+                for (const string& newGene : getAllMutation(cur)) {
+                    if (visited.find(newGene) == visited.end() && bankSet.find(newGene) != bankSet.end()) {
+                        q.push(newGene);
+                        visited.insert(newGene);
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+    }
+
+    // 当前基因的每个位置都可以变异为 A/G/C/T，穷举所有可能的结构
+    vector<string> getAllMutation(const string& gene) {
+        vector<string> res;
+        string geneChars = gene;
+        for (int i = 0; i < geneChars.length(); i++) {
+            char oldChar = geneChars[i];
+            for (char newChar : vector<char>{'A', 'G', 'C', 'T'}) {
+                geneChars[i] = newChar;
+                res.push_back(geneChars);
+            }
+            // 注意：变换为某个位置的基因后要恢复成原来的基因
+            geneChars[i] = oldChar;
+        }
+        return res;
     }
 };

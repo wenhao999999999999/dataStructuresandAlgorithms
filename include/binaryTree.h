@@ -239,4 +239,16 @@ public:
     // res[3] 记录以 root 为根的二叉树所有节点值之和。
     vector<int> findMaxMinSum(TreeNode* root);
 };
+
+// Trie/前缀树/字典树
+// 一句话总结：Trie 树就是多叉树结构的延伸，是一种针对字符串进行特殊优化的数据结构。Trie 树在处理字符串相关操作时有诸多优势，比如节省公共字符串前缀的内存空间、方便处理前缀操作、支持通配符匹配等。
+// Trie树的基本结构：Trie 树本质上就是一棵从二叉树衍生出来的多叉树。
+// Trie 树节点实现
+template<typename V>
+struct TrieNode {
+    V val = NULL; // 存储键对应的值
+    TrieNode<V>* children[256] = { NULL }; // 存储指向子节点的指针
+};
+// TrieNode 节点本身只存储 val 字段,并没有一个字段来存储字符，字符是通过子节点在父节点的 children 数组中的索引确定的。形象理解就是，Trie 树用「树枝」存储字符串（键），用「节点」存储字符串（键）对应的数据（值）。
+
 #endif // BINARY_TREE_H
