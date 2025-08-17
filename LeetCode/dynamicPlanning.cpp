@@ -9,6 +9,7 @@ using namespace std;
 // 动态规划的三要素：1.状态转移方程；2.最优子结构；3.重叠子问题
 // 写状态转移方程思路：明确状态，也就是原问题和子问题中会变化的变量（一般是函数入参）-> 明确选择，也就是导致「状态」产生变化的行为 -> 明确dp函数的定义，返回值一般是题目要求我们计算的量。
 
+// 动态规划算法本质上就是穷举「状态」，然后在「选择」中选择最优解。
 
 class Solution {
 public:
@@ -492,5 +493,226 @@ public:
         maxSum = max(curSum, maxSum);
 
         return curSum;
+    }
+};
+
+// 打家劫舍(House Robber)
+// 你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+// 解题思路:明确状态:面前房子的索引;明确选择:抢或不抢;返回值:从索引 i 开始偷窃,能获取的最高金额
+class Solution {
+private:
+    vector<int> memo;
+public:
+    int rob(vector<int>& nums) {
+        memo.resize(nums.size(), -1);
+        return dp (nums, 0);
+
+
+        
+    }
+
+    int dp (vector<int>& nums, int start) {
+        // base case
+        if (start >= nums.size()) {
+            return 0;
+        }
+
+        if (memo[start] != -1) return memo[start];
+
+        int res = max(
+                // 不抢这家,抢下家
+                dp (nums, start+1),
+                // 抢这家,去下家
+                dp (nums, start + 2) + nums[start]
+            );
+
+        memo[start] = res;
+        return memo[start];
+    }
+};
+
+// 买卖股票的最佳时机Ⅳ
+// 给你一个整数数组 prices 和一个整数 k ，其中 prices[i] 是某支给定的股票在第 i 天的价格。设计一个算法来计算你所能获取的最大利润。你最多可以完成 k 笔交易。也就是说，你最多可以买 k 次，卖 k 次。注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。我们把一次买入和一次卖出定义为一次「交易」
+
+// 解题思路：动态规划解法，明确状态：天数，允许交易的最大次数，持有状态；明确选择：买入，卖出或者无操作，buy, sell, rest。 rest 操作还应该分两种状态，一种是 buy 之后的 rest（持有了股票），一种是 sell 之后的 rest（没有持有股票）；返回值：能获取的最大利润；
+// 这个问题的「状态」有三个，第一个是天数，第二个是允许交易的最大次数，第三个是当前的持有状态（即之前说的 rest 的状态，我们不妨用 1 表示持有，0 表示没有持有）。然后我们用一个三维数组就可以装下这几种状态的全部组合：
+// dp[i][k][0 or 1]
+// 0 <= i <= n - 1, 1 <= k <= K
+// n 为天数，大 K 为交易数的上限，0 和 1 代表是否持有股票。
+// 此问题共 n × K × 2 种状态，全部穷举就能搞定。
+
+// for 0 <= i < n:
+//     for 1 <= k <= K:
+//         for s in {0, 1}:
+//             dp[i][k][s] = max(buy, sell, rest)
+// class Solution {
+// public:
+//     int maxProfit(int k, vector<int>& prices) {
+        
+//     }
+// };
+// 我们想求的最终答案是 dp[n - 1][K][0]，即最后一天，最多允许 K 次交易，最多获得多少利润。
+
+// 状态转移方程：
+// dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1] + prices[i])
+            //   max( 今天选择 rest,        今天选择 sell       )
+// dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0] - prices[i])
+//               max( 今天选择 rest,         今天选择 buy         )
+
+// base case
+// dp[-1][...][0] = 0
+// 解释：因为 i 是从 0 开始的，所以 i = -1 意味着还没有开始，这时候的利润当然是 0。
+
+// dp[-1][...][1] = -infinity
+// 解释：还没开始的时候，是不可能持有股票的。
+// 因为我们的算法要求一个最大值，所以初始值设为一个最小值，方便取最大值。
+
+// dp[...][0][0] = 0
+// 解释：因为 k 是从 1 开始的，所以 k = 0 意味着根本不允许交易，这时候利润当然是 0。
+
+// dp[...][0][1] = -infinity
+// 解释：不允许交易的情况下，是不可能持有股票的。
+// 因为我们的算法要求一个最大值，所以初始值设为一个最小值，方便取最大值。
+
+// 买卖股票的最佳时机
+// 给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+
+class Solution {
+private:
+    int count = 0;
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        vector<vector<int>>dp(n, vector<int>(2));
+
+        for (int i = 0; i < n; i++) {
+            if (i - 1 == -1) {
+                dp[i][0] = 0;
+                dp[i][1] = -prices[i];
+                continue;
+            }
+
+            dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i]);
+            // 注意：因为只有一次买入机会，所以如果选择今天买入的话，就表示之前都没有买入过，今天才第一次买入
+            // dp[i-1][0] - prices[i] 的含义是：在之前已经卖出过（拿到了利润），然后今天再买入。
+            dp[i][1] = max(dp[i-1][1], -prices[i]);
+        }
+        return dp[n-1][0];
+    }
+};
+
+// 买卖股票的最佳时机Ⅱ
+// 给你一个整数数组 prices ，其中 prices[i] 表示某支股票第 i 天的价格。在每一天，你可以决定是否购买和/或出售股票。你在任何时候 最多 只能持有 一股 股票。你也可以先购买，然后在 同一天 出售。返回 你能获得的 最大利润 。
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        int dp_i_0 = 0;
+        int dp_i_1 = INT_MIN;
+
+        for (int i = 0; i < n; i++) {
+            // 注意：这里要暂存前一天的状态值
+            int temp = dp_i_0;
+            dp_i_0 = max(dp_i_0, dp_i_1 + prices[i]);
+            dp_i_1 = max(dp_i_1, temp - prices[i]);
+        }
+
+        return dp_i_0;
+    }
+};
+
+// 买卖股票的最佳时机含冷冻期
+// 给定一个整数数组prices，其中第  prices[i] 表示第 i 天的股票价格。设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+// 卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+// 注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）
+// 解题思路：
+// dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])
+// dp[i][1] = max(dp[i-1][1], dp[i-2][0] - prices[i])
+// 解释：第 i 天选择 buy 的时候，要从 i-2 的状态转移，而不是 i-1 。
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        vector<vector<int>> dp(n, vector<int>(2));
+
+        for (int i = 0; i < n; i++) {
+            if (i - 1 == -1) {
+                // base case 1
+                dp[i][0] = 0;
+                dp[i][1] = -prices[i];
+                continue;
+            }
+
+            if (i - 2 == -1) {
+                // base case 2
+                dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i]);
+                dp[i][1] = max(dp[i-1][1], -prices[i]);
+                continue;
+            }
+
+            dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i]);
+            dp[i][1] = max(dp[i-1][1], dp[i-2][0] - prices[i]);
+        }
+
+        return dp[n-1][0];
+    }
+};
+
+// 买卖股票的最佳时机含手续费
+// 给定一个整数数组 prices，其中 prices[i]表示第 i 天的股票价格 ；整数 fee 代表了交易股票的手续费用。你可以无限次地完成交易，但是你每笔交易都需要付手续费。如果你已经购买了一个股票，在卖出它之前你就不能再继续购买股票了。返回获得利润的最大值。
+// 注意：这里的一笔交易指买入持有并卖出股票的整个过程，每笔交易你只需要为支付一次手续费。
+// 解题思路：在每次卖出或者买入股票时减去手续费
+class Solution {
+public:
+    int maxProfit(vector<int>& prices, int fee) {
+        int n = prices.size();
+        vector<vector<int>> dp(n, vector<int>(2));
+
+        for (int i = 0; i < n; i++) {
+            if (i - 1 == -1) {
+                // base case 1
+                dp[i][0] = 0;
+                dp[i][1] = -prices[i] - fee;
+                continue;
+            }
+
+            dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i]);
+            dp[i][1] = max(dp[i-1][1], dp[i-1][0] - prices[i] - fee);
+        }
+
+        return dp[n-1][0];
+    }
+};
+
+// 买卖股票的最佳时机Ⅲ
+// 给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+// 解题思路：
+// 原始的状态转移方程，没有可化简的地方
+// dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1] + prices[i])
+// dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0] - prices[i])
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        int max_k = 2;
+        // 注意：dp 是三维数组
+        vector<vector<vector<int>>> dp(n, vector<vector<int>>(max_k+1, vector<int>(2)));
+
+        for (int i = 0; i < n; i++) {
+            for (int k = max_k; k >= 1; k--) {
+                // base case
+                if (i - 1 == -1) {
+                    dp[i][k][0] = 0;
+                    dp[i][k][1] = -prices[i];
+                    continue;
+                }
+
+                dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1] + prices[i]);
+                dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0] - prices[i]);
+            }
+
+        }
+        return dp[n-1][max_k][0];
+
     }
 };
