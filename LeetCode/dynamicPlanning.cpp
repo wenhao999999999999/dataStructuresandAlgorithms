@@ -497,39 +497,85 @@ public:
 };
 
 // 打家劫舍(House Robber)
-// 你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
-// 解题思路:明确状态:面前房子的索引;明确选择:抢或不抢;返回值:从索引 i 开始偷窃,能获取的最高金额
+// 题干：
+    // 你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+// 思路:
+    // 明确状态:面前房子的索引;
+    // 明确选择:抢或不抢;
+    // 返回值:从索引 i 开始偷窃,能获取的最高金额
 class Solution {
 private:
-    vector<int> memo;
+    vector<int> memo; // 备忘录，memo[i] 表示从第 i 间房子开始偷的最大金额
 public:
     int rob(vector<int>& nums) {
-        memo.resize(nums.size(), -1);
-        return dp (nums, 0);
-
-
-        
+        memo.resize(nums.size(), -1); // 初始化备忘录，-1 表示未计算
+        return dp(nums, 0); // 从第 0 间房子开始偷
     }
-
+    // 定义 dp(nums, start)：从索引 start 开始偷，能获得的最高金额。
     int dp (vector<int>& nums, int start) {
-        // base case
+        // base case: 没有房子了
         if (start >= nums.size()) {
             return 0;
         }
 
+        // 查备忘录，避免重复计算
         if (memo[start] != -1) return memo[start];
 
+        // 选择：不偷当前，或者偷当前+跳过下一个
         int res = max(
-                // 不抢这家,抢下家
-                dp (nums, start+1),
-                // 抢这家,去下家
-                dp (nums, start + 2) + nums[start]
+                dp(nums, start+1),              // 不偷这家
+                dp(nums, start+2) + nums[start] // 偷这家
             );
 
-        memo[start] = res;
+        memo[start] = res; // 保存结果到备忘录
         return memo[start];
     }
 };
+
+
+// 打家劫舍Ⅱ
+// 题干：
+    // 你是一个专业的小偷，计划偷窃沿街的房屋，每间房内都藏有一定的现金。这个地方所有的房屋都 围成一圈 ，这意味着第一个房屋和最后一个房屋是紧挨着的。同时，相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警 。
+    // 给定一个代表每个房屋存放金额的非负整数数组，计算你 在不触动警报装置的情况下 ，今晚能够偷窃到的最高金额。
+// 思路：
+    // 把「环」拆成两条「直线」：
+        // 情况一：考虑 nums[0..n-2]（偷第一间，不偷最后一间）。
+        // 情况二：考虑 nums[1..n-1]（不偷第一间，可以偷最后一间）。
+    // 两种情况分别套用「打家劫舍 I」的动态规划解法，取最大值。
+// 代码：
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 1) return nums[0]; // 特殊情况：只有一间房
+
+        vector<int> memo1(n, -1);
+        vector<int> memo2(n, -1);
+
+        // 两次调用，分别对应两种情况
+        return max(
+            dp(nums, 0, n - 2, memo1), // 偷 [0..n-2]
+            dp(nums, 1, n - 1, memo2)  // 偷 [1..n-1]
+        );
+    }
+
+    // dp 函数：计算闭区间 [start, end] 的最优解
+    int dp(vector<int>& nums, int start, int end, vector<int>& memo) {
+        if (start > end) return 0;
+
+        if (memo[start] != -1) return memo[start];
+
+        // 状态转移：要么偷当前房子，要么跳过
+        int res = max(
+            dp(nums, start + 2, end, memo) + nums[start], // 偷当前
+            dp(nums, start + 1, end, memo)                // 不偷
+        );
+
+        memo[start] = res;
+        return res;
+    }
+};
+
 
 // 买卖股票的最佳时机Ⅳ
 // 给你一个整数数组 prices 和一个整数 k ，其中 prices[i] 是某支给定的股票在第 i 天的价格。设计一个算法来计算你所能获取的最大利润。你最多可以完成 k 笔交易。也就是说，你最多可以买 k 次，卖 k 次。注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。我们把一次买入和一次卖出定义为一次「交易」

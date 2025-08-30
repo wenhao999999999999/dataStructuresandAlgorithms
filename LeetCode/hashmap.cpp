@@ -207,3 +207,47 @@ public:
         return sum;
     }
 };
+
+// 6.随机链表的复制
+// 题目描述：
+    // 给你一个长度为 n 的链表，每个节点包含一个额外增加的随机指针 random ，该指针可以指向链表中的任何节点或空节点。 构造这个链表的 深拷贝。 深拷贝应该正好由 n 个 全新 节点组成，其中每个新节点的值都设为其对应的原节点的值。新节点的 next 指针和 random 指针也都应指向复制链表中的新节点，并使原链表和复制链表中的这些指针能够表示相同的链表状态。复制链表中的指针都不应指向原链表中的节点 。返回复制链表的头节点。用一个由 n 个节点组成的链表来表示输入/输出中的链表。每个节点用一个 [val, random_index] 表示：val：一个表示 Node.val 的整数。random_index：随机指针指向的节点索引（范围从 0 到 n-1）；如果不指向任何节点，则为  null 。你的代码 只 接受原链表的头节点 head 作为传入参数。
+// 解题思路：
+    // 用一个哈希表存储原始链表和新链表之间的映射关系，遍历两次初始链表：
+        // 第一次遍历，先把所有节点克隆出来；
+        // 第二次遍历，把克隆结点的结构连接好；
+    // 最后返回克隆之后的头节点
+// 核心代码：
+class Node {
+public:
+    int val;
+    Node* next;
+    Node* random;
+    
+    Node(int _val) {
+        val = _val;
+        next = NULL;
+        random = NULL;
+    }
+};
+
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        unordered_map<Node*, Node*> originToClone;
+
+        // 第一次遍历：先把所有节点克隆出来
+        for (Node* p = head; p != nullptr; p = p->next) {
+            originToClone[p] = new Node(p->val);
+        }
+
+        // 第二次遍历：构造克隆结点的结构
+        for (Node* p = head; p != nullptr; p = p->next) {
+            // 注意点1：当前克隆节点应该指向下一个新的克隆结点，而不是原结点
+            originToClone[p]->next = originToClone[p->next];
+            originToClone[p]->random = originToClone[p->random];
+        }
+
+        return originToClone[head];
+    }
+};
+

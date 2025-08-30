@@ -99,3 +99,67 @@ public:
         return res == INT_MAX ? 0 : res;
     }
 };
+
+// 2. 串联所有单词的子串
+// 题干：
+    // 给定一个字符串 s 和一个字符串数组 words。 words 中所有字符串 长度相同。
+    //  s 中的 串联子串 是指一个包含  words 中所有字符串以任意顺序排列连接起来的子串。
+    // 例如，如果 words = ["ab","cd","ef"]， 那么 "abcdef"， "abefcd"，"cdabef"， "cdefab"，"efabcd"， 和 "efcdab" 都是串联子串。 "acdbef" 不是串联子串，因为他不是任何 words 排列的连接。
+    // 返回所有串联子串在 s 中的开始索引。你可以以 任意顺序 返回答案。
+// 思路：
+    // 1. 由于 words 中的每个字符串长度相同，首先可以根据 words 中单词的长度计算出目标子串的长度。
+
+    // 2. 然后滑动窗口遍历字符串 s，每次截取一个子串并判断它是否是 words 中各个字符串的拼接。
+
+    // 3. 使用哈希表来存储 words 中每个单词出现的次数，滑动窗口内的子串的每个单词的次数也要匹配。
+// 代码：
+class Solution {
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+        vector<int> result;
+        if (words.empty() || s.empty()) return result; // 如果 words 或 s 为空，直接返回空结果。
+
+        // ========= 初始化 ===========
+        int word_len = words[0].size(); // 每个单词长度相同，记为 word_len。
+        int num_words = words.size(); // 单词个数为 num_words
+        int total_len = word_len * num_words; // 整个拼接串的总长度为 total_len = word_len * num_words。
+
+        // ============= 构建单词计数哈希表 ============
+        unordered_map<string, int> word_count;
+        for (const string& word : words) {
+            word_count[word]++; // 用哈希表统计每个单词在 words 中的出现次数。
+        }
+
+        // ================= 遍历所有可能的起点 ===============
+        for (int i = 0; i <= s.size() - total_len; i++) {
+            unordered_map<string, int> seen; // 用 seen 哈希表统计当前窗口里实际看到的单词次数。
+            int j = 0;
+            // 循环 j = 0 ~ num_words-1
+            while (j < num_words) {
+                int start = i + j * word_len;
+                if (start + word_len > s.size()) break;  // 保证不越界
+
+                string word = s.substr(start, word_len); // 逐个取出窗口内的单词
+
+                // 检查单词合法性
+                if (word_count.find(word) != word_count.end()) {
+                    // 如果 word 在 word_count 中：更新 seen[word]
+                    seen[word]++;
+                    // 如果次数超过 word_count[word] → 不合法，退出。
+                    if (seen[word] > word_count[word]) break; 
+                } else {
+                    // 如果 word 不在 words 中 → 直接退出。
+                    break; 
+                }
+                j++;
+            }
+            
+            // 判断是否完全匹配
+            if (j == num_words) {
+                result.push_back(i); // 如果成功匹配了所有单词（j == num_words），说明以 i 为起点的子串符合条件 → 记录 i。
+            }
+        }
+
+        return result;
+    }
+};

@@ -270,42 +270,44 @@ ListNode* reverseList(ListNode* head) {
 
 }
 
-// 7.随机链表的复制
-// 题目描述：
-    // 给你一个长度为 n 的链表，每个节点包含一个额外增加的随机指针 random ，该指针可以指向链表中的任何节点或空节点。 构造这个链表的 深拷贝。 深拷贝应该正好由 n 个 全新 节点组成，其中每个新节点的值都设为其对应的原节点的值。新节点的 next 指针和 random 指针也都应指向复制链表中的新节点，并使原链表和复制链表中的这些指针能够表示相同的链表状态。复制链表中的指针都不应指向原链表中的节点 。返回复制链表的头节点。用一个由 n 个节点组成的链表来表示输入/输出中的链表。每个节点用一个 [val, random_index] 表示：val：一个表示 Node.val 的整数。random_index：随机指针指向的节点索引（范围从 0 到 n-1）；如果不指向任何节点，则为  null 。你的代码 只 接受原链表的头节点 head 作为传入参数。
-// 解题思路：
-    // 用一个哈希表存储原始链表和新链表之间的映射关系，遍历两次初始链表，第一次遍历，先把所有节点克隆出来；第二次遍历，把克隆结点的结构连接好，最后返回克隆之后的头节点
-// 核心代码：
-class Node {
-public:
-    int val;
-    Node* next;
-    Node* random;
-    
-    Node(int _val) {
-        val = _val;
-        next = NULL;
-        random = NULL;
-    }
-};
+// 7. 奇偶链表
+// 题干：
+    // 给定单链表的头节点 head ，将所有索引为奇数的节点和索引为偶数的节点分别分组，保持它们原有的相对顺序，然后把偶数索引节点分组连接到奇数索引节点分组之后，返回重新排序的链表。
+    // 第一个节点的索引被认为是 奇数 ， 第二个节点的索引为 偶数 ，以此类推。
+    // 请注意，偶数组和奇数组内部的相对顺序应该与输入时保持一致。
+    // 你必须在 O(1) 的额外空间复杂度和 O(n) 的时间复杂度下解决这个问题。
 
+// 思路：
+    // 把原链表拆成两条“奇链”和“偶链”，一趟扫描原地串起来，最后把奇链尾指向偶链头即可。保持相对顺序
+    
+// 代码：
 class Solution {
 public:
-    Node* copyRandomList(Node* head) {
-        unordered_map<Node*, Node*> originToClone;
+    ListNode* oddEvenList(ListNode* head) {
+        // 1) 边界：0 个结点或 1 个结点，原样返回
+        if (!head || !head->next) return head;
 
-        // 第一次遍历：先把所有节点克隆出来
-        for (Node* p = head; p != nullptr; p = p->next) {
-            originToClone[p] = new Node(p->val);
+        // 2) 初始化三个指针
+        ListNode* odd = head;            // odd 指向“奇数位链”的尾结点，初始是第1个结点
+        ListNode* even = head->next;     // even 指向“偶数位链”的尾结点，初始是第2个结点
+        ListNode* evenHead = even;       // 记录偶链的头，最后要把奇链尾接到这里
+
+        // 3) 主循环：当还存在“下一个偶结点”和“该偶结点后面至少还有一个结点（下一奇）”时继续
+        while (even && even->next) {
+            // 3.1) 把当前奇链尾 odd 接到“下一个奇数位结点”（即 even->next）
+            odd->next = even->next;      // 现在 odd->next 成了新奇结点
+            odd = odd->next;             // odd 前进到新的奇链尾
+
+            // 3.2) 把当前偶链尾 even 接到“下一个偶数位结点”
+            //     “下一个偶”就是“新奇结点的下一个”（odd->next）
+            even->next = odd->next;      // 连接到新偶结点（可能是 nullptr）
+            even = even->next;           // even 前进到新的偶链尾（若为 nullptr 则循环会停）
         }
 
-        // 第二次遍历：构造克隆结点的结构
-        for (Node* p = head; p != nullptr; p = p->next) {
-            // 注意点1：当前克隆节点应该指向下一个新的克隆结点，而不是原结点
-            originToClone[p]->next = originToClone[p->next];
-            originToClone[p]->random = originToClone[p->random];
-        }
+        // 4) 把奇链尾接上“偶链头”，形成奇链在前、偶链在后的新顺序
+        odd->next = evenHead;
 
-        return originToClone[head];
+        // 5) 返回链表头（仍然是原来的 head，只是内部 next 指针被重排）
+        return head;
     }
 };

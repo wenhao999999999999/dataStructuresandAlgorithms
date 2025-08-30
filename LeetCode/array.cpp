@@ -116,3 +116,96 @@ public:
 
 // 最大子数组和问题/Kadane 算法
 
+
+// 4. H 指数
+// 题干：
+    // 给你一个整数数组 citations ，其中 citations[i] 表示研究者的第 i 篇论文被引用的次数。计算并返回该研究者的 h 指数。根据维基百科上 h 指数的定义：h 代表“高引用次数” ，一名科研人员的 h 指数 是指他（她）至少发表了 h 篇论文，并且 至少 有 h 篇论文被引用次数大于等于 h 。如果 h 有多种可能的值，h 指数 是其中最大的那个。
+// 思路：
+    // 排序：把 citations 按照降序排序。
+
+    // 遍历：依次检查第 i 篇论文的引用次数是否 ≥ i+1。
+
+        // 例如：排序后数组 [6,5,3,1,0]
+
+        // 第 1 篇论文 6 ≥ 1 → h ≥ 1
+
+        // 第 2 篇论文 5 ≥ 2 → h ≥ 2
+
+        // 第 3 篇论文 3 ≥ 3 → h ≥ 3
+
+        // 第 4 篇论文 1 ≥ 4 ❌ → 停止
+
+    // 答案：最大的满足条件的 i+1 就是 H 指数。
+    // 排序后，第 i 篇论文如果至少被引用 i+1 次，说明前 i+1 篇论文都达标，可以更新 H 指数。直到遇到不满足的情况为止，最大值就是答案。
+class Solution {
+public:
+    int hIndex(vector<int>& citations) {
+        // 注意点 1 : sort() 函数默认升序排序
+        sort(citations.begin(), citations.end(), greater<int>());
+        int h = 0;
+        // 遍历数组，依次检查第 i 篇论文的引用次数是否 ≥ i + 1
+        for (int i = 0; i < citations.size(); i++) {
+            if (citations[i] >= i+1) h++;
+            else break;
+        }
+        return h;
+
+    }
+};
+
+// ----------------------------- 二维数组 ------------------------------ 
+// 1. 反转字符串中的单词
+// 题干：
+    // 给你一个字符串 s ，请你反转字符串中单词的顺序。单词 是由非空格字符组成的字符串。s 中使用至少一个空格将字符串中的单词分隔开。返回 单词 顺序颠倒且 单词 之间用单个空格连接的结果字符串。
+
+// 示例 1：
+    // 输入：s = "the sky is blue"
+    // 输出："blue is sky the"
+
+// 思路：先把整个字符串进行翻转，再把每个单词中的字母翻转。
+
+// 代码：
+class Solution {
+public:
+    string reverseWords(string s) {
+        istringstream iss(s);
+        string word;
+        vector<string> words;
+        while(iss >> word){
+            words.push_back(word);
+        }
+        reverse(words.begin(), words.end());
+        string res;
+        for(int i = 0; i < words.size(); i++){
+            res += words[i];
+            if(i != words.size() - 1) res += " ";
+        }
+        return res;
+    }
+};
+
+// 2. 反转字符串中的单词 Ⅱ
+// 题干：
+    // 给你一个字符数组 s ，反转其中 单词 的顺序。单词 的定义为：单词是一个由非空格字符组成的序列。s 中的单词将会由单个空格分隔。必须设计并实现 原地 解法来解决此问题，即不分配额外的空间。
+// 思路：
+    // 先把整个字符数组反转；再把每个单词各自反转回来。因为题目保证单词之间只有一个空格、无首尾空格，这样即可把“单词顺序”反转且不分配额外空间。
+// 代码：
+class Solution {
+public:
+    void reverseWords(vector<char>& s) {
+        int n = (int)s.size();
+        // 1) 整体反转
+        reverse(s.begin(), s.end());
+
+        // 2) 逐个单词反转
+        int i = 0;
+        while (i < n) {
+            int j = i;
+            while (j < n && s[j] != ' ') ++j;   // [i, j) 是一个单词
+            // 注意点1：reverse() 函数左闭右开
+            // 注意点2：reverse() 函数的入参是迭代器
+            reverse(s.begin() + i, s.begin() + j);
+            i = j + 1; // 跳到下一个单词的开头
+        }
+    }
+};
